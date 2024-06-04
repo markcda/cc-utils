@@ -607,6 +607,10 @@ impl_consider_cli!(serde_json::Error);
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(reqwest::Error);
 
+#[cfg(feature = "base64")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+impl_consider_cli!(base64::DecodeError);
+
 #[cfg(feature = "bb8-redis")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(bb8_redis::redis::RedisError);
@@ -641,3 +645,7 @@ impl_consider!(serde_yaml::Error);
 #[cfg(feature = "reqwest")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(reqwest::Error);
+
+#[cfg(feature = "base64")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+impl_consider!(base64::DecodeError);
