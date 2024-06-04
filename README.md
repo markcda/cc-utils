@@ -1,6 +1,6 @@
 # cc-utils
 
-Rust fullstack utils for `salvo` and `dioxus`.
+Rust fullstack utils for `salvo` and `yew`/`dioxus`/`{your-favorite-framework}`.
 
 This project includes:
 
@@ -10,7 +10,7 @@ This project includes:
 
 ---
 
-Фуллстек-утилиты языка Rust для `salvo` и `dioxus`.
+Фуллстек-утилиты языка Rust для `salvo` и `yew`/`dioxus`/`{вашего-любимого-фреймворка}`.
 
 Проект включает в себя:
 
