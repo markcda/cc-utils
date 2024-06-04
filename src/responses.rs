@@ -215,11 +215,13 @@ impl<T: Serialize + Send> ServerResponseWriter for MsgPack<T> {
 
 #[cfg(feature = "reqwest")]
 #[allow(async_fn_in_trait)]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 pub trait MsgPackResponse {
   async fn msgpack<T: DeserializeOwned>(self) -> CResult<T>;
 }
 
 #[cfg(feature = "reqwest")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl MsgPackResponse for reqwest::Response {
   async fn msgpack<T: DeserializeOwned>(self) -> CResult<T> {
     let full = self.bytes().await?;

@@ -24,6 +24,7 @@ pub struct ErrorResponse {
 
 /// Data structure responsible for client errors.
 #[cfg(feature = "reqwest")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 #[derive(Debug)]
 pub struct CliError {
   pub message: String,
@@ -200,6 +201,7 @@ pub trait Consider<T> {
 }
 
 #[cfg(feature = "reqwest")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 pub trait ConsiderCli<T> {
   fn consider_cli(self, error_text_replacement: Option<String>) -> Result<T, CliError>;
 }
@@ -220,6 +222,7 @@ impl<T> Consider<T> for Result<T, ErrorResponse> {
 }
 
 #[cfg(feature = "reqwest")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl<T> ConsiderCli<T> for Result<T, CliError> {
   /// Changes the parameters of a possible error to the specified ones.
   fn consider_cli(self, error_text_replacement: Option<String>) -> Result<T, CliError> {
@@ -247,6 +250,7 @@ impl<T> Consider<T> for Result<T, String> {
 }
 
 #[cfg(feature = "reqwest")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl<T> ConsiderCli<T> for Result<T, String> {
   /// Changes the parameters of a possible error to the specified ones.
   fn consider_cli(self, error_text_replacement: Option<String>) -> Result<T, CliError> {
@@ -274,6 +278,7 @@ impl<T> Consider<T> for Result<T, &str> {
 }
 
 #[cfg(feature = "reqwest")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl<T> ConsiderCli<T> for Result<T, &str> {
   /// Changes the parameters of a possible error to the specified ones.
   fn consider_cli(self, error_text_replacement: Option<String>) -> Result<T, CliError> {
@@ -294,6 +299,7 @@ impl From<String> for ErrorResponse {
 }
 
 #[cfg(feature = "reqwest")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl From<String> for CliError {
   /// Creates a new error from a string.
   fn from(value: String) -> Self {
@@ -310,6 +316,7 @@ impl From<&str> for ErrorResponse {
 }
 
 #[cfg(feature = "reqwest")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl From<&str> for CliError {
   /// Creates a new error from a string.
   fn from(value: &str) -> Self {
@@ -375,11 +382,17 @@ impl_consider!(salvo::Error);
 impl_consider!(salvo::hyper::http::status::InvalidStatusCode);
 impl_consider!(salvo::http::ParseError);
 
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(rmp_serde::encode::Error);
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(rmp_serde::decode::Error);
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(std::io::Error);
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(log::SetLoggerError);
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(serde_json::Error);
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(reqwest::Error);
 
 #[cfg(feature = "bb8-redis")]

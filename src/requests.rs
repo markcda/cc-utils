@@ -57,13 +57,13 @@ impl MsgPackParser for Request {
 #[cfg(feature = "reqwest")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 pub trait MsgPackBuilder {
-  fn msgpack<T: Serialize + ?Sized>(self, msgpack: &T) -> CResult<RequestBuilder>;
+  fn msgpack<T: Serialize + ?Sized>(self, msgpack: &T) -> MResult<RequestBuilder>;
 }
 
 #[cfg(feature = "reqwest")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl MsgPackBuilder for RequestBuilder {
-  fn msgpack<T: Serialize + ?Sized>(self, msgpack: &T) -> CResult<RequestBuilder> {
+  fn msgpack<T: Serialize + ?Sized>(self, msgpack: &T) -> MResult<RequestBuilder> {
     let (cli, mut req) = self.build_split();
     let mut error = None;
     if let Ok(req) = req.as_mut() {

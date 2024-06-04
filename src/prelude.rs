@@ -13,18 +13,21 @@ pub use crate::requests::MsgPackBuilder;
 pub use crate::results::MResult;
 
 #[cfg(feature = "reqwest")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 pub use crate::results::CResult;
 
 #[cfg(feature = "salvo")]
 pub use crate::responses::{OK, Plain, Html, File, Json, MsgPack};
 
 #[cfg(feature = "reqwest")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 pub use crate::responses::MsgPackResponse;
 
 #[cfg(feature = "salvo")]
 pub use crate::errors::{ErrorResponse, Consider};
 
 #[cfg(feature = "reqwest")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 pub use crate::errors::{CliError, ConsiderCli};
 
 #[cfg(feature = "salvo")]
