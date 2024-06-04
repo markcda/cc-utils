@@ -72,7 +72,7 @@ macro_rules! impl_oapi_endpoint_out_t {
   };
 }
 
-/// Отправляет 200 без данных.
+/// Sends 200 without data.
 #[cfg(feature = "salvo")]
 pub struct OK(pub &'static str);
 
@@ -93,7 +93,7 @@ impl ServerResponseWriter for OK {
   }
 }
 
-/// Отправляет 200 и простой текст.
+/// Sends 200 and plain text.
 #[cfg(feature = "salvo")]
 #[derive(Debug)]
 pub struct Plain(pub String, pub &'static str);
@@ -115,7 +115,7 @@ impl ServerResponseWriter for Plain {
   }
 }
 
-/// Отправляет 200 и HTML.
+/// Sends 200 and HTML.
 #[cfg(feature = "salvo")]
 #[derive(Debug)]
 pub struct Html(pub String, pub &'static str);
@@ -137,7 +137,7 @@ impl ServerResponseWriter for Html {
   }
 }
 
-/// Отправляет 200 и файл.
+/// Sends 200 and file.
 #[cfg(feature = "salvo")]
 #[derive(Debug)]
 pub struct File(pub String, pub String, pub &'static str);
@@ -159,7 +159,7 @@ impl ServerResponseWriter for File {
   }
 }
 
-/// Отправляет 200 и JSON.
+/// Sends 200 and JSON.
 #[cfg(feature = "salvo")]
 #[derive(Debug)]
 pub struct Json<T>(pub T, pub &'static str);
@@ -181,7 +181,7 @@ impl<T: Serialize + Send> ServerResponseWriter for Json<T> {
   }
 }
 
-/// Отправляет 200 и MsgPack.
+/// Sends 200 and MsgPack.
 #[cfg(feature = "salvo")]
 #[derive(Debug)]
 pub struct MsgPack<T>(pub T, pub &'static str);
