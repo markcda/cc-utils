@@ -1,5 +1,6 @@
 //! Implementation of optional private errors for `salvo` and client errors for `reqwest`.
 
+use std::any::Any;
 #[cfg(feature = "salvo")]
 use salvo::http::StatusCode;
 
@@ -508,15 +509,56 @@ impl_consider!(std::sync::mpsc::RecvError);
 impl_consider!(log::SetLoggerError);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(serde_json::Error);
+
+#[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(salvo::Error);
+
+#[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(salvo::hyper::http::status::InvalidStatusCode);
+
+#[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(salvo::http::ParseError);
 
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+impl<T> Consider<T> for Result<T, Option<&Box<dyn Any + Send + Sync>>> {
+  /// Изменяет параметры возможной ошибки на указанные.
+  fn consider(
+    self,
+    status_code: Option<StatusCode>,
+    error_text_replacement: Option<String>,
+    public: bool,
+  ) -> Result<T, ErrorResponse> {
+    self.map_err(|_| {
+      let mut new_error = ErrorResponse {
+        status_code,
+        error_text: "Depot obtain failed!".into(),
+        original_text: None,
+        public_error: public,
+      };
+      if error_text_replacement.is_some() {
+        new_error.original_text = Some(new_error.error_text.to_owned());
+        new_error.error_text = error_text_replacement.unwrap();
+      }
+      new_error
+    })
+  }
+}
+
+#[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+impl From<Option<&Box<dyn Any + Send + Sync>>> for ErrorResponse {
+  /// Создаёт `ErrorResponse` из данной ошибки.
+  fn from(_value: Option<&Box<(dyn std::any::Any + Send + Sync + 'static)>>) -> Self {
+    "Depot obtain failed!".into()
+  }
+}
+
+#[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl<T, U> Consider<T> for Result<T, std::sync::mpsc::SendError<U>> {
   /// Изменяет параметры возможной ошибки на указанные.
   fn consider(
@@ -541,8 +583,8 @@ impl<T, U> Consider<T> for Result<T, std::sync::mpsc::SendError<U>> {
   }
 }
 
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl<U> From<std::sync::mpsc::SendError<U>> for ErrorResponse {
   /// Создаёт `ErrorResponse` из данной ошибки.
   fn from(value: std::sync::mpsc::SendError<U>) -> Self {
@@ -560,6 +602,8 @@ impl_consider_cli!(std::io::Error);
 impl_consider_cli!(log::SetLoggerError);
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(serde_json::Error);
+
+#[cfg(feature = "reqwest")]
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(reqwest::Error);
 
