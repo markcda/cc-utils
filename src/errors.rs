@@ -384,6 +384,10 @@ impl_consider!(std::io::Error);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(std::env::VarError);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+impl_consider!(std::sync::mpsc::SendError);
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+impl_consider!(std::sync::mpsc::RecvError);
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(log::SetLoggerError);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(serde_json::Error);
