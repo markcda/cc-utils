@@ -186,7 +186,7 @@ impl_oapi_endpoint_out_t!(Json, "application/json");
 
 #[cfg(feature = "salvo")]
 #[macro_export]
-macro_rules! json { ($e:expr) => { Ok(Json($e, fn_name!())) }; }
+macro_rules! json { ($e:expr) => { Ok(Json($e, cc_utils::fn_name!())) }; }
 
 #[cfg(feature = "salvo")]
 #[salvo::async_trait]

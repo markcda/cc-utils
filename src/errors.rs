@@ -1,6 +1,9 @@
 //! Implementation of optional private errors for `salvo` and client errors for `reqwest`.
 
+#[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 use std::any::Any;
+
 #[cfg(feature = "salvo")]
 use salvo::http::StatusCode;
 
