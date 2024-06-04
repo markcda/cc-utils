@@ -1,6 +1,11 @@
 //! Implementation of utilities for working with MessagePack with requests in `salvo` and `reqwest`.
 
 use crate::prelude::*;
+
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+use serde::Serialize;
+
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "salvo")]

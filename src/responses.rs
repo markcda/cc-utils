@@ -20,6 +20,7 @@ use salvo::Writer as ServerResponseWriter;
 #[cfg(feature = "salvo")]
 use salvo::fs::NamedFile;
 
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 use serde::Serialize;
 
 #[cfg(feature = "reqwest")]
