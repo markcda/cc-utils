@@ -1,0 +1,33 @@
+[package]
+name = "cc-utils"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = ["salvo", "reqwest", "bb8-redis", "bb8-mongo", "sea-orm", "dotenv", "log4rs", "serde-yaml", "dioxus"]
+salvo = ["dep:salvo"]
+reqwest = ["dep:reqwest"]
+bb8-redis = ["dep:bb8", "dep:bb8-redis"]
+bb8-mongo = ["dep:bb8", "dep:mongodb", "dep:bb8-mongodb"]
+sea-orm = ["dep:sea-orm"]
+dotenv = ["dep:dotenv"]
+log4rs = ["dep:log4rs"]
+serde-yaml = ["dep:serde_yaml"]
+dioxus = ["dep:dioxus"]
+
+[dependencies]
+bb8 = { version = "0.8", optional = true }
+bb8-mongodb = { version = "0.2", optional = true }
+bb8-redis = { version = "0.13", optional = true }
+dioxus = { version = "0.4", optional = true }
+dotenv = { version = "0.15", optional = true }
+log = "0.4"
+log4rs = { version = "1.2", optional = true }
+mongodb = { version = "2.8", optional = true }
+rmp-serde = "1.1"
+salvo = { version = "0.66", features = ["oapi"], optional = true }
+sea-orm = { version = "0.12", optional = true }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml = { version = "0.9", optional = true }
+reqwest = { version = "0.11", features = ["json"], optional = true }
