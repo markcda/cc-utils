@@ -1,5 +1,16 @@
 # cc-utils
 
+[![crates.io][crates-badge]][crates-url]
+[![MIT licensed][mit-badge]][mit-url]
+[![docs.rs][docs-badge]][docs-url]
+
+[crates-badge]: https://img.shields.io/crates/v/cc-utils.svg
+[crates-url]: https://crates.io/crates/cc-utils
+[mit-badge]: https://img.shields.io/badge/license-MIT-blue.svg
+[mit-url]: https://github.com/tokio-rs/tokio/blob/master/LICENSE
+[docs-badge]: https://img.shields.io/docsrs/cc-utils
+[docs-url]: https://docs.rs/cc-utils
+
 Rust fullstack utils for `salvo` and `yew`/`dioxus`/`{your-favorite-framework}`.
 
 This project includes:
