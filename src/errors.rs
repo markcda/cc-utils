@@ -325,6 +325,7 @@ impl From<&str> for CliError {
 }
 
 /// Macro to simplify `Consider` trait implementation.
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 macro_rules! impl_consider {
   ($e:ty) => {
     #[cfg(feature = "salvo")]
@@ -351,6 +352,7 @@ macro_rules! impl_consider {
 }
 
 /// Macro to simplify `ConsiderCli` trait implementation.
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 macro_rules! impl_consider_cli {
   ($e:ty) => {
     #[cfg(feature = "reqwest")]
@@ -373,13 +375,21 @@ macro_rules! impl_consider_cli {
   };
 }
 
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(rmp_serde::encode::Error);
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(rmp_serde::decode::Error);
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(std::io::Error);
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(log::SetLoggerError);
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(serde_json::Error);
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(salvo::Error);
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(salvo::hyper::http::status::InvalidStatusCode);
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(salvo::http::ParseError);
 
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
@@ -396,25 +406,36 @@ impl_consider_cli!(serde_json::Error);
 impl_consider_cli!(reqwest::Error);
 
 #[cfg(feature = "bb8-redis")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(bb8_redis::redis::RedisError);
 
 #[cfg(feature = "bb8-redis")]
-impl_consider!(bb8_redis::bb8::RunError<bb8_redis::redis::RedisError>);
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+impl_consider!(bb8::RunError<bb8_redis::redis::RedisError>);
 
 #[cfg(feature = "bb8-mongo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(bb8_mongodb::Error);
 
 #[cfg(feature = "bb8-mongo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(mongodb::error::Error);
 
 #[cfg(feature = "dotenv")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(dotenv::Error);
 
 #[cfg(feature = "log4rs")]
 impl_consider!(log4rs::config::runtime::ConfigErrors);
 
 #[cfg(feature = "sea-orm")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(sea_orm::DbErr);
 
 #[cfg(feature = "serde-yaml")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(serde_yaml::Error);
+
+#[cfg(feature = "reqwest")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+impl_consider!(reqwest::Error);

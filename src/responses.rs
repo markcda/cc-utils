@@ -20,7 +20,11 @@ use salvo::Writer as ServerResponseWriter;
 #[cfg(feature = "salvo")]
 use salvo::fs::NamedFile;
 
-use serde::{de::DeserializeOwned, Serialize};
+use serde::Serialize;
+
+#[cfg(feature = "reqwest")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+use serde::de::DeserializeOwned;
 
 /// Macro to define the function that called the response.
 #[macro_export]
