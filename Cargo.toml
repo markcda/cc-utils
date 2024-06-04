@@ -5,6 +5,7 @@ version = "0.1.1"
 edition = "2021"
 license = "MIT"
 authors = ["Klimenty Titov <aclo.create@gmail.com>"]
+repository = "https://github.com/markcda/cc-utils"
 
 [features]
 default = ["salvo", "reqwest", "bb8-redis", "bb8-mongo", "sea-orm", "dotenv", "log4rs", "serde-yaml", "dioxus"]
