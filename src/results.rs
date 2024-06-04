@@ -1,4 +1,4 @@
-//! Типы результатов для ошибок `ErrorResponse` (`salvo`) и `CliError` (`reqwest`).
+//! Result types for `ErrorResponse` (`salvo`) and `CliError` (`reqwest`) errors.
 
 #[cfg(feature = "salvo")]
 use crate::errors::ErrorResponse;

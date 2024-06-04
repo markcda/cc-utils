@@ -1,4 +1,4 @@
-//! Реализация утилит для работы с MessagePack с запросами в `salvo` и `reqwest`.
+//! Implementation of utilities for working with MessagePack with requests in `salvo` and `reqwest`.
 
 use crate::prelude::*;
 use serde::{Deserialize, Serialize};

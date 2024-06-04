@@ -1,4 +1,4 @@
-//! Реализация утилит для работы с ответами в `salvo` и `reqwest`.
+//! Implementation of utilities for working with responses in `salvo` and `reqwest`.
 
 use crate::prelude::*;
 
@@ -22,7 +22,7 @@ use salvo::fs::NamedFile;
 
 use serde::{de::DeserializeOwned, Serialize};
 
-/// Макрос для определения функции, вызвавшей ответ.
+/// Macro to define the function that called the response.
 #[macro_export]
 macro_rules! fn_name {
   () => {{
@@ -32,7 +32,7 @@ macro_rules! fn_name {
     }
     let name = type_name_of(f);
     
-    // Для `#[endpoint]` можно укоротить путь следующим образом:
+    // For `#[endpoint]` path can be shortened as follows:
     match name[..name.len() - 3].rsplit("::").nth(2) {
       Some(el) => el,
       None => &name[..name.len() - 3],
@@ -40,7 +40,7 @@ macro_rules! fn_name {
   }};
 }
 
-/// Макрос для автоматизации реализаций `EndpointOutRegister` (для простых типов)
+/// Macro for automating `EndpointOutRegister` implementations (for simple types)
 #[cfg(feature = "salvo")]
 macro_rules! impl_oapi_endpoint_out {
   ($t:tt, $c:expr) => {
@@ -56,7 +56,7 @@ macro_rules! impl_oapi_endpoint_out {
   };
 }
 
-/// Макрос для автоматизации реализаций `EndpointOutRegister` (для шаблонных типов)
+/// Macro for automating `EndpointOutRegister` implementations (for template types)
 #[cfg(feature = "salvo")]
 macro_rules! impl_oapi_endpoint_out_t {
   ($t:tt, $c:expr) => {
@@ -89,7 +89,7 @@ impl ServerResponseWriter for OK {
   async fn write(self, _req: &mut Request, _depot: &mut Depot, res: &mut Response) {
     res.status_code(StatusCode::OK);
     res.render("");
-    log::debug!("[{}] => Получен и отправлен результат 200", self.0);
+    log::debug!("[{}] => Received and sent result 200", self.0);
   }
 }
 
@@ -111,7 +111,7 @@ impl ServerResponseWriter for Plain {
   async fn write(self, _req: &mut Request, _depot: &mut Depot, res: &mut Response) {
     res.status_code(StatusCode::OK);
     res.render(&self.0);
-    log::debug!("[{}] => Получен и отправлен результат 200 с текстом: {}", self.1, self.0);
+    log::debug!("[{}] => Received and sent result 200 with text: {}", self.1, self.0);
   }
 }
 
@@ -133,7 +133,7 @@ impl ServerResponseWriter for Html {
   async fn write(self, _req: &mut Request, _depot: &mut Depot, res: &mut Response) {
     res.status_code(StatusCode::OK);
     res.render(salvo::writing::Text::Html(&self.0));
-    log::debug!("[{}] => Получен и отправлен результат 200 с HTML", self.1);
+    log::debug!("[{}] => Received and sent result 200 with HTML", self.1);
   }
 }
 
@@ -155,7 +155,7 @@ impl ServerResponseWriter for File {
   async fn write(self, req: &mut Request, _depot: &mut Depot, res: &mut Response) {
     res.status_code(StatusCode::OK);
     NamedFile::builder(&self.0).attached_name(&self.1).send(req.headers(), res).await;
-    log::debug!("[{}] => Получен и отправлен результат 200 с файлом {}", self.2, self.1);
+    log::debug!("[{}] => Received and sent result 200 with file {}", self.2, self.1);
   }
 }
 
@@ -177,7 +177,7 @@ impl<T: Serialize + Send> ServerResponseWriter for Json<T> {
   async fn write(self, _req: &mut Request, _depot: &mut Depot, res: &mut Response) {
     res.status_code(StatusCode::OK);
     res.render(salvo::writing::Json(self.0));
-    log::debug!("[{}] => Получен и отправлен результат 200 с JSON", self.1);
+    log::debug!("[{}] => Received and sent result 200 with JSON", self.1);
   }
 }
 
@@ -201,13 +201,13 @@ impl<T: Serialize + Send> ServerResponseWriter for MsgPack<T> {
     match rmp_serde::to_vec(&self.0) {
       Ok(bytes) => {
         res.headers_mut().insert(CONTENT_TYPE, HeaderValue::from_static("application/msgpack; charset=utf-8"));
-        log::debug!("[{}] => Отправляются байты: {:?}", self.1, bytes);
+        log::debug!("[{}] => Sending bytes: {:?}", self.1, bytes);
         res.write_body(bytes).ok();
-        log::debug!("[{}] => Получен и отправлен результат 200 с MsgPack", self.1);
+        log::debug!("[{}] => Received and sent result 200 with MsgPack", self.1);
       }
       Err(e) => {
-        log::error!("[{}] => Не удалось сериализовать данные: {:?}", e, self.1);
-        ErrorResponse::from("Не удалось сериализовать данные.").with_500().build().write(req, depot, res).await;
+        log::error!("[{}] => Failed to serialize data: {:?}", e, self.1);
+        ErrorResponse::from("Failed to serialize data.").with_500().build().write(req, depot, res).await;
       }
     }
   }

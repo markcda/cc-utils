@@ -1,4 +1,4 @@
-//! Реализация опционально приватных ошибок для `salvo` и ошибок клиента для `reqwest`.
+//! Implementation of optional private errors for `salvo` and client errors for `reqwest`.
 
 #[cfg(feature = "salvo")]
 use salvo::http::StatusCode;
@@ -12,7 +12,7 @@ use salvo::{Depot, Request, Response};
 #[cfg(feature = "salvo")]
 use salvo::Writer as ServerResponseWriter;
 
-/// Структура данных, отвечающая за ошибки сервера.
+/// Data structure responsible for server errors.
 #[cfg(feature = "salvo")]
 #[derive(Debug)]
 pub struct ErrorResponse {
@@ -22,7 +22,7 @@ pub struct ErrorResponse {
   pub public_error: bool,
 }
 
-/// Структура данных, отвечающая за ошибки клиента.
+/// Data structure responsible for client errors.
 #[cfg(feature = "reqwest")]
 #[derive(Debug)]
 pub struct CliError {
@@ -32,26 +32,26 @@ pub struct CliError {
 #[cfg(feature = "salvo")]
 #[salvo::async_trait]
 impl ServerResponseWriter for ErrorResponse {
-  /// Метод для отправки сообщения об ошибке клиенту.
+  /// Method for sending an error message to the client.
   async fn write(self, _req: &mut Request, _depot: &mut Depot, res: &mut Response) {
     res.status_code(self.status_code.unwrap_or(StatusCode::INTERNAL_SERVER_ERROR));
     if !self.public_error {
       let public_error_desc = match self.status_code {
-        Some(StatusCode::BAD_REQUEST) => "Плохой запрос.",
-        Some(StatusCode::UNAUTHORIZED) => "Неавторизованный запрос.",
-        Some(StatusCode::FORBIDDEN) => "Доступ запрещён.",
-        Some(StatusCode::NOT_FOUND) => "Страница не найдена.",
-        Some(StatusCode::METHOD_NOT_ALLOWED) => "Метод запрещён.",
-        Some(StatusCode::LOCKED) => "Действия заблокированы.",
-        Some(StatusCode::INTERNAL_SERVER_ERROR) => "Внутренняя ошибка сервера. Обратитесь к администратору.",
-        _ => "Особенная ошибка. Уточните детали у администратора.",
+        Some(StatusCode::BAD_REQUEST) => "Bad request.",
+        Some(StatusCode::UNAUTHORIZED) => "Unauthorized request.",
+        Some(StatusCode::FORBIDDEN) => "Access denied.",
+        Some(StatusCode::NOT_FOUND) => "Page or method not found.",
+        Some(StatusCode::METHOD_NOT_ALLOWED) => "Method not allowed.",
+        Some(StatusCode::LOCKED) => "Your actions is locked.",
+        Some(StatusCode::INTERNAL_SERVER_ERROR) => "Internal server error. Contact the administrator.",
+        _ => "Specific error. Check with the administrator for details.",
       };
-      log::error!("Ошибка с кодом {:?}: \"{}\", отправлено клиенту: \"{}\"", self.status_code, self.error_text, public_error_desc);
-      if self.original_text.is_some() { log::error!("При этом оригинальный текст ошибки звучит так: {:?}", self.original_text.unwrap()); }
+      log::error!("Error with code {:?}: \"{}\", client will get: \"{}\"", self.status_code, self.error_text, public_error_desc);
+      if self.original_text.is_some() { log::error!("The original error text: {:?}", self.original_text.unwrap()); }
       res.render(public_error_desc);
     } else {
-      log::error!("Ошибка с кодом {:?}: \"{}\"", self.status_code, self.error_text);
-      if self.original_text.is_some() { log::error!("При этом оригинальный текст ошибки звучит так: {:?}", self.original_text.unwrap()); }
+      log::error!("Error with code {:?}: \"{}\"", self.status_code, self.error_text);
+      if self.original_text.is_some() { log::error!("The original error text: {:?}", self.original_text.unwrap()); }
       res.render(&self.error_text);
     }
   }
@@ -59,7 +59,7 @@ impl ServerResponseWriter for ErrorResponse {
 
 #[cfg(feature = "salvo")]
 impl EndpointOutRegister for ErrorResponse {
-  /// Регистрирует виды ошибок для OpenAPI.
+  /// Registers error types for OpenAPI.
   fn register(components: &mut salvo::oapi::Components, operation: &mut salvo::oapi::Operation) {
     operation.responses.insert("400", salvo::oapi::Response::new("Bad request").add_content("text/plain", String::to_schema(components)));
     operation.responses.insert("401", salvo::oapi::Response::new("Unauthorized").add_content("text/plain", String::to_schema(components)));
@@ -74,105 +74,105 @@ impl EndpointOutRegister for ErrorResponse {
 #[cfg(feature = "salvo")]
 #[allow(dead_code)]
 impl ErrorResponse {
-  /// Приватная ошибка BAD REQUEST (400).
+  /// Private error BAD REQUEST (400).
   pub fn with_400(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::BAD_REQUEST);
     self.public_error = false;
     self
   }
   
-  /// Публичная ошибка BAD REQUEST (400).
+  /// Public error BAD REQUEST (400).
   pub fn with_400_pub(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::BAD_REQUEST);
     self.public_error = true;
     self
   }
   
-  /// Приватная ошибка UNAUTHORIZED (401).
+  /// Private error UNAUTHORIZED (401).
   pub fn with_401(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::UNAUTHORIZED);
     self.public_error = false;
     self
   }
   
-  /// Публичная ошибка UNAUTHORIZED (401).
+  /// Public error UNAUTHORIZED (401).
   pub fn with_401_pub(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::UNAUTHORIZED);
     self.public_error = true;
     self
   }
   
-  /// Приватная ошибка FORBIDDEN (403).
+  /// Private error FORBIDDEN (403).
   pub fn with_403(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::FORBIDDEN);
     self.public_error = false;
     self
   }
   
-  /// Публичная ошибка FORBIDDEN (403).
+  /// Public error FORBIDDEN (403).
   pub fn with_403_pub(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::FORBIDDEN);
     self.public_error = true;
     self
   }
   
-  /// Приватная ошибка NOT FOUND (404).
+  /// Private error NOT FOUND (404).
   pub fn with_404(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::NOT_FOUND);
     self.public_error = false;
     self
   }
   
-  /// Публичная ошибка NOT FOUND (404).
+  /// Public error NOT FOUND (404).
   pub fn with_404_pub(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::NOT_FOUND);
     self.public_error = true;
     self
   }
   
-  /// Приватная ошибка METHOD NOT ALLOWED (405).
+  /// Private error METHOD NOT ALLOWED (405).
   pub fn with_405(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::METHOD_NOT_ALLOWED);
     self.public_error = false;
     self
   }
   
-  /// Публичная ошибка METHOD NOT ALLOWED (405).
+  /// Public error METHOD NOT ALLOWED (405).
   pub fn with_405_pub(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::METHOD_NOT_ALLOWED);
     self.public_error = true;
     self
   }
   
-  /// Приватная ошибка LOCKED (423).
+  /// Private error LOCKED (423).
   pub fn with_423(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::LOCKED);
     self.public_error = false;
     self
   }
   
-  /// Публичная ошибка LOCKED (423).
+  /// Public error LOCKED (423).
   pub fn with_423_pub(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::LOCKED);
     self.public_error = true;
     self
   }
   
-  /// Приватная ошибка INTERNAL SERVER ERROR (500).
+  /// Private error INTERNAL SERVER ERROR (500).
   pub fn with_500(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::INTERNAL_SERVER_ERROR);
     self.public_error = false;
     self
   }
   
-  /// Публичная ошибка INTERNAL SERVER ERROR (500).
+  /// Public error INTERNAL SERVER ERROR (500).
   pub fn with_500_pub(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::INTERNAL_SERVER_ERROR);
     self.public_error = true;
     self
   }
   
-  /// Меняет текст сообщения об ошибке.
+  /// Changes error message text.
   pub fn with_text(&mut self, text: String) -> &mut Self {
     match self.original_text {
       None => self.original_text = Some(self.error_text.to_owned()),
@@ -182,7 +182,7 @@ impl ErrorResponse {
     self
   }
   
-  /// Осуществляет сборку ответа.
+  /// Builds the response.
   pub fn build(&mut self) -> Self {
     Self {
       status_code: self.status_code,
@@ -193,7 +193,7 @@ impl ErrorResponse {
   }
 }
 
-/// Трейт, позволяющий любую ошибку трансформировать в `ErrorResponse`, назначив дополнительные параметры.
+/// A trait that allows you to transform any error into an `ErrorResponse` by assigning additional parameters.
 #[cfg(feature = "salvo")]
 pub trait Consider<T> {
   fn consider(self, status_code: Option<StatusCode>, error_text_replacement: Option<String>, public: bool) -> Result<T, ErrorResponse>;
@@ -206,7 +206,7 @@ pub trait ConsiderCli<T> {
 
 #[cfg(feature = "salvo")]
 impl<T> Consider<T> for Result<T, ErrorResponse> {
-  /// Изменяет параметры возможной ошибки на указанные.
+  /// Changes the parameters of a possible error to the specified ones.
   fn consider(self, status_code: Option<StatusCode>, error_text_replacement: Option<String>, public: bool) -> Result<T, ErrorResponse> {
     self.map_err(|e| {
       let mut new_error = ErrorResponse { status_code, error_text: e.error_text, original_text: e.original_text, public_error: public };
@@ -221,7 +221,7 @@ impl<T> Consider<T> for Result<T, ErrorResponse> {
 
 #[cfg(feature = "reqwest")]
 impl<T> ConsiderCli<T> for Result<T, CliError> {
-  /// Изменяет параметры возможной ошибки на указанные.
+  /// Changes the parameters of a possible error to the specified ones.
   fn consider_cli(self, error_text_replacement: Option<String>) -> Result<T, CliError> {
     self.map_err(|e| {
       let mut new_error = CliError { message: e.message };
@@ -233,7 +233,7 @@ impl<T> ConsiderCli<T> for Result<T, CliError> {
 
 #[cfg(feature = "salvo")]
 impl<T> Consider<T> for Result<T, String> {
-  /// Изменяет параметры возможной ошибки на указанные.
+  /// Changes the parameters of a possible error to the specified ones.
   fn consider(self, status_code: Option<StatusCode>, error_text_replacement: Option<String>, public: bool) -> Result<T, ErrorResponse> {
     self.map_err(|e| {
       let mut new_error = ErrorResponse { status_code, error_text: e, original_text: None, public_error: public };
@@ -248,7 +248,7 @@ impl<T> Consider<T> for Result<T, String> {
 
 #[cfg(feature = "reqwest")]
 impl<T> ConsiderCli<T> for Result<T, String> {
-  /// Изменяет параметры возможной ошибки на указанные.
+  /// Changes the parameters of a possible error to the specified ones.
   fn consider_cli(self, error_text_replacement: Option<String>) -> Result<T, CliError> {
     self.map_err(|e| {
       let mut new_error = CliError { message: e };
@@ -260,7 +260,7 @@ impl<T> ConsiderCli<T> for Result<T, String> {
 
 #[cfg(feature = "salvo")]
 impl<T> Consider<T> for Result<T, &str> {
-  /// Изменяет параметры возможной ошибки на указанные.
+  /// Changes the parameters of a possible error to the specified ones.
   fn consider(self, status_code: Option<StatusCode>, error_text_replacement: Option<String>, public: bool) -> Result<T, ErrorResponse> {
     self.map_err(|e| {
       let mut new_error = ErrorResponse { status_code, error_text: e.to_owned(), original_text: None, public_error: public };
@@ -275,7 +275,7 @@ impl<T> Consider<T> for Result<T, &str> {
 
 #[cfg(feature = "reqwest")]
 impl<T> ConsiderCli<T> for Result<T, &str> {
-  /// Изменяет параметры возможной ошибки на указанные.
+  /// Changes the parameters of a possible error to the specified ones.
   fn consider_cli(self, error_text_replacement: Option<String>) -> Result<T, CliError> {
     self.map_err(|e| {
       let mut new_error = CliError { message: e.to_owned() };
@@ -287,7 +287,7 @@ impl<T> ConsiderCli<T> for Result<T, &str> {
 
 #[cfg(feature = "salvo")]
 impl From<String> for ErrorResponse {
-  /// Создаёт новую ошибку из строки.
+  /// Creates a new error from a string.
   fn from(value: String) -> Self {
     Self { status_code: None, error_text: value, original_text: None, public_error: false }
   }
@@ -295,7 +295,7 @@ impl From<String> for ErrorResponse {
 
 #[cfg(feature = "reqwest")]
 impl From<String> for CliError {
-  /// Создаёт новую ошибку из строки.
+  /// Creates a new error from a string.
   fn from(value: String) -> Self {
     Self { message: value }
   }
@@ -303,7 +303,7 @@ impl From<String> for CliError {
 
 #[cfg(feature = "salvo")]
 impl From<&str> for ErrorResponse {
-  /// Создаёт новую ошибку из строки.
+  /// Creates a new error from a string.
   fn from(value: &str) -> Self {
     Self { status_code: None, error_text: value.to_owned(), original_text: None, public_error: false }
   }
@@ -311,13 +311,13 @@ impl From<&str> for ErrorResponse {
 
 #[cfg(feature = "reqwest")]
 impl From<&str> for CliError {
-  /// Создаёт новую ошибку из строки.
+  /// Creates a new error from a string.
   fn from(value: &str) -> Self {
     Self { message: value.to_owned() }
   }
 }
 
-/// Макрос для упрощения реализации трейта `Consider`.
+/// Macro to simplify `Consider` trait implementation.
 macro_rules! impl_consider {
   ($e:ty) => {
     #[cfg(feature = "salvo")]
@@ -343,7 +343,7 @@ macro_rules! impl_consider {
   };
 }
 
-/// Макрос для упрощения реализации трейта `ConsiderCli`.
+/// Macro to simplify `ConsiderCli` trait implementation.
 macro_rules! impl_consider_cli {
   ($e:ty) => {
     #[cfg(feature = "reqwest")]
