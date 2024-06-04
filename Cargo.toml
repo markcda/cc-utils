@@ -1,7 +1,10 @@
 [package]
 name = "cc-utils"
+description = "Rust Fullstack utils (strict error handling, `Consider` trait, MessagePack support, etc.) for Salvo & Dioxus"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+authors = ["Klimenty Titov <aclo.create@gmail.com>"]
 
 [features]
 default = ["salvo", "reqwest", "bb8-redis", "bb8-mongo", "sea-orm", "dotenv", "log4rs", "serde-yaml", "dioxus"]
