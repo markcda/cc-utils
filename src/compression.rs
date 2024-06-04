@@ -1,5 +1,7 @@
 //! Macros for compressing data sent by the `salvo` server.
 
+/// Brotli compression salvo's hoop.
+/// 
 /// Usage:
 ///
 /// ```rust

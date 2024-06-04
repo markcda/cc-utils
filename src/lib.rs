@@ -1,7 +1,7 @@
-mod compression;
-mod errors;
-mod requests;
-mod responses;
-mod results;
+pub mod compression;
+pub mod errors;
+pub mod requests;
+pub mod responses;
+pub mod results;
 
 pub mod prelude;

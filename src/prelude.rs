@@ -1,4 +1,4 @@
-#![allow(unused_imports)]
+//! Fast access to nice things.
 
 #[cfg(feature = "salvo")]
 pub use crate::brotli;
