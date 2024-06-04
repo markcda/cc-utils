@@ -150,9 +150,21 @@ pub struct File(pub String, pub String, pub &'static str);
 #[cfg(feature = "salvo")]
 impl_oapi_endpoint_out!(File, "application/octet-stream");
 
+/// File response.
+///
+/// Usage:
+///
+/// ```rust
+/// use cc_utils::prelude::*;
+/// use salvo::prelude::*;
+///
+/// pub async fn some_endpoint() -> MResult<File> {
+///   file!("filepath", "Normal file name")
+/// }
+/// ```
 #[cfg(feature = "salvo")]
 #[macro_export]
-macro_rules! file { ($e:expr) => { Ok(File($e, fn_name!())) }; }
+macro_rules! file { ($e1:expr, $e2:expr) => { Ok(File($e1, $e2, fn_name!())) }; }
 
 #[cfg(feature = "salvo")]
 #[salvo::async_trait]
