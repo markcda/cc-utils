@@ -35,7 +35,10 @@ pub struct CliError {
 impl ServerResponseWriter for ErrorResponse {
   /// Method for sending an error message to the client.
   async fn write(self, _req: &mut Request, _depot: &mut Depot, res: &mut Response) {
-    res.status_code(self.status_code.unwrap_or(StatusCode::INTERNAL_SERVER_ERROR));
+    res.status_code(
+      self.status_code
+        .unwrap_or(StatusCode::INTERNAL_SERVER_ERROR),
+    );
     if !self.public_error {
       let public_error_desc = match self.status_code {
         Some(StatusCode::BAD_REQUEST) => "Bad request.",
@@ -44,15 +47,30 @@ impl ServerResponseWriter for ErrorResponse {
         Some(StatusCode::NOT_FOUND) => "Page or method not found.",
         Some(StatusCode::METHOD_NOT_ALLOWED) => "Method not allowed.",
         Some(StatusCode::LOCKED) => "Your actions is locked.",
-        Some(StatusCode::INTERNAL_SERVER_ERROR) => "Internal server error. Contact the administrator.",
+        Some(StatusCode::INTERNAL_SERVER_ERROR) => {
+          "Internal server error. Contact the administrator."
+        }
         _ => "Specific error. Check with the administrator for details.",
       };
-      log::error!("Error with code {:?}: \"{}\", client will get: \"{}\"", self.status_code, self.error_text, public_error_desc);
-      if self.original_text.is_some() { log::error!("The original error text: {:?}", self.original_text.unwrap()); }
+      log::error!(
+                "Error with code {:?}: \"{}\", client will get: \"{}\"",
+                self.status_code,
+                self.error_text,
+                public_error_desc
+            );
+      if self.original_text.is_some() {
+        log::error!("The original error text: {:?}", self.original_text.unwrap());
+      }
       res.render(public_error_desc);
     } else {
-      log::error!("Error with code {:?}: \"{}\"", self.status_code, self.error_text);
-      if self.original_text.is_some() { log::error!("The original error text: {:?}", self.original_text.unwrap()); }
+      log::error!(
+                "Error with code {:?}: \"{}\"",
+                self.status_code,
+                self.error_text
+            );
+      if self.original_text.is_some() {
+        log::error!("The original error text: {:?}", self.original_text.unwrap());
+      }
       res.render(&self.error_text);
     }
   }
@@ -62,13 +80,41 @@ impl ServerResponseWriter for ErrorResponse {
 impl EndpointOutRegister for ErrorResponse {
   /// Registers error types for OpenAPI.
   fn register(components: &mut salvo::oapi::Components, operation: &mut salvo::oapi::Operation) {
-    operation.responses.insert("400", salvo::oapi::Response::new("Bad request").add_content("text/plain", String::to_schema(components)));
-    operation.responses.insert("401", salvo::oapi::Response::new("Unauthorized").add_content("text/plain", String::to_schema(components)));
-    operation.responses.insert("403", salvo::oapi::Response::new("Forbidden").add_content("text/plain", String::to_schema(components)));
-    operation.responses.insert("404", salvo::oapi::Response::new("Not found").add_content("text/plain", String::to_schema(components)));
-    operation.responses.insert("405", salvo::oapi::Response::new("Method not allowed").add_content("text/plain", String::to_schema(components)));
-    operation.responses.insert("423", salvo::oapi::Response::new("Locked").add_content("text/plain", String::to_schema(components)));
-    operation.responses.insert("500", salvo::oapi::Response::new("Internal server error").add_content("text/plain", String::to_schema(components)));
+    operation.responses.insert(
+      "400",
+      salvo::oapi::Response::new("Bad request")
+        .add_content("text/plain", String::to_schema(components)),
+    );
+    operation.responses.insert(
+      "401",
+      salvo::oapi::Response::new("Unauthorized")
+        .add_content("text/plain", String::to_schema(components)),
+    );
+    operation.responses.insert(
+      "403",
+      salvo::oapi::Response::new("Forbidden")
+        .add_content("text/plain", String::to_schema(components)),
+    );
+    operation.responses.insert(
+      "404",
+      salvo::oapi::Response::new("Not found")
+        .add_content("text/plain", String::to_schema(components)),
+    );
+    operation.responses.insert(
+      "405",
+      salvo::oapi::Response::new("Method not allowed")
+        .add_content("text/plain", String::to_schema(components)),
+    );
+    operation.responses.insert(
+      "423",
+      salvo::oapi::Response::new("Locked")
+        .add_content("text/plain", String::to_schema(components)),
+    );
+    operation.responses.insert(
+      "500",
+      salvo::oapi::Response::new("Internal server error")
+        .add_content("text/plain", String::to_schema(components)),
+    );
   }
 }
 
@@ -81,108 +127,108 @@ impl ErrorResponse {
     self.public_error = false;
     self
   }
-  
+
   /// Public error BAD REQUEST (400).
   pub fn with_400_pub(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::BAD_REQUEST);
     self.public_error = true;
     self
   }
-  
+
   /// Private error UNAUTHORIZED (401).
   pub fn with_401(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::UNAUTHORIZED);
     self.public_error = false;
     self
   }
-  
+
   /// Public error UNAUTHORIZED (401).
   pub fn with_401_pub(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::UNAUTHORIZED);
     self.public_error = true;
     self
   }
-  
+
   /// Private error FORBIDDEN (403).
   pub fn with_403(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::FORBIDDEN);
     self.public_error = false;
     self
   }
-  
+
   /// Public error FORBIDDEN (403).
   pub fn with_403_pub(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::FORBIDDEN);
     self.public_error = true;
     self
   }
-  
+
   /// Private error NOT FOUND (404).
   pub fn with_404(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::NOT_FOUND);
     self.public_error = false;
     self
   }
-  
+
   /// Public error NOT FOUND (404).
   pub fn with_404_pub(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::NOT_FOUND);
     self.public_error = true;
     self
   }
-  
+
   /// Private error METHOD NOT ALLOWED (405).
   pub fn with_405(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::METHOD_NOT_ALLOWED);
     self.public_error = false;
     self
   }
-  
+
   /// Public error METHOD NOT ALLOWED (405).
   pub fn with_405_pub(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::METHOD_NOT_ALLOWED);
     self.public_error = true;
     self
   }
-  
+
   /// Private error LOCKED (423).
   pub fn with_423(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::LOCKED);
     self.public_error = false;
     self
   }
-  
+
   /// Public error LOCKED (423).
   pub fn with_423_pub(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::LOCKED);
     self.public_error = true;
     self
   }
-  
+
   /// Private error INTERNAL SERVER ERROR (500).
   pub fn with_500(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::INTERNAL_SERVER_ERROR);
     self.public_error = false;
     self
   }
-  
+
   /// Public error INTERNAL SERVER ERROR (500).
   pub fn with_500_pub(&mut self) -> &mut Self {
     self.status_code = Some(StatusCode::INTERNAL_SERVER_ERROR);
     self.public_error = true;
     self
   }
-  
+
   /// Changes error message text.
   pub fn with_text(&mut self, text: String) -> &mut Self {
     match self.original_text {
       None => self.original_text = Some(self.error_text.to_owned()),
-      Some(_) => {},
+      Some(_) => {}
     }
     self.error_text = text;
     self
   }
-  
+
   /// Builds the response.
   pub fn build(&mut self) -> Self {
     Self {
@@ -197,7 +243,12 @@ impl ErrorResponse {
 /// A trait that allows you to transform any error into an `ErrorResponse` by assigning additional parameters.
 #[cfg(feature = "salvo")]
 pub trait Consider<T> {
-  fn consider(self, status_code: Option<StatusCode>, error_text_replacement: Option<String>, public: bool) -> Result<T, ErrorResponse>;
+  fn consider(
+    self,
+    status_code: Option<StatusCode>,
+    error_text_replacement: Option<String>,
+    public: bool,
+  ) -> Result<T, ErrorResponse>;
 }
 
 #[cfg(feature = "reqwest")]
@@ -209,9 +260,19 @@ pub trait ConsiderCli<T> {
 #[cfg(feature = "salvo")]
 impl<T> Consider<T> for Result<T, ErrorResponse> {
   /// Changes the parameters of a possible error to the specified ones.
-  fn consider(self, status_code: Option<StatusCode>, error_text_replacement: Option<String>, public: bool) -> Result<T, ErrorResponse> {
+  fn consider(
+    self,
+    status_code: Option<StatusCode>,
+    error_text_replacement: Option<String>,
+    public: bool,
+  ) -> Result<T, ErrorResponse> {
     self.map_err(|e| {
-      let mut new_error = ErrorResponse { status_code, error_text: e.error_text, original_text: e.original_text, public_error: public };
+      let mut new_error = ErrorResponse {
+        status_code,
+        error_text: e.error_text,
+        original_text: e.original_text,
+        public_error: public,
+      };
       if error_text_replacement.is_some() {
         new_error.original_text = Some(new_error.error_text.to_owned());
         new_error.error_text = error_text_replacement.unwrap();
@@ -228,7 +289,9 @@ impl<T> ConsiderCli<T> for Result<T, CliError> {
   fn consider_cli(self, error_text_replacement: Option<String>) -> Result<T, CliError> {
     self.map_err(|e| {
       let mut new_error = CliError { message: e.message };
-      if error_text_replacement.is_some() { new_error.message = error_text_replacement.unwrap(); }
+      if error_text_replacement.is_some() {
+        new_error.message = error_text_replacement.unwrap();
+      }
       new_error
     })
   }
@@ -237,9 +300,19 @@ impl<T> ConsiderCli<T> for Result<T, CliError> {
 #[cfg(feature = "salvo")]
 impl<T> Consider<T> for Result<T, String> {
   /// Changes the parameters of a possible error to the specified ones.
-  fn consider(self, status_code: Option<StatusCode>, error_text_replacement: Option<String>, public: bool) -> Result<T, ErrorResponse> {
+  fn consider(
+    self,
+    status_code: Option<StatusCode>,
+    error_text_replacement: Option<String>,
+    public: bool,
+  ) -> Result<T, ErrorResponse> {
     self.map_err(|e| {
-      let mut new_error = ErrorResponse { status_code, error_text: e, original_text: None, public_error: public };
+      let mut new_error = ErrorResponse {
+        status_code,
+        error_text: e,
+        original_text: None,
+        public_error: public,
+      };
       if error_text_replacement.is_some() {
         new_error.original_text = Some(new_error.error_text.to_owned());
         new_error.error_text = error_text_replacement.unwrap();
@@ -256,7 +329,9 @@ impl<T> ConsiderCli<T> for Result<T, String> {
   fn consider_cli(self, error_text_replacement: Option<String>) -> Result<T, CliError> {
     self.map_err(|e| {
       let mut new_error = CliError { message: e };
-      if error_text_replacement.is_some() { new_error.message = error_text_replacement.unwrap(); }
+      if error_text_replacement.is_some() {
+        new_error.message = error_text_replacement.unwrap();
+      }
       new_error
     })
   }
@@ -265,9 +340,19 @@ impl<T> ConsiderCli<T> for Result<T, String> {
 #[cfg(feature = "salvo")]
 impl<T> Consider<T> for Result<T, &str> {
   /// Changes the parameters of a possible error to the specified ones.
-  fn consider(self, status_code: Option<StatusCode>, error_text_replacement: Option<String>, public: bool) -> Result<T, ErrorResponse> {
+  fn consider(
+    self,
+    status_code: Option<StatusCode>,
+    error_text_replacement: Option<String>,
+    public: bool,
+  ) -> Result<T, ErrorResponse> {
     self.map_err(|e| {
-      let mut new_error = ErrorResponse { status_code, error_text: e.to_owned(), original_text: None, public_error: public };
+      let mut new_error = ErrorResponse {
+        status_code,
+        error_text: e.to_owned(),
+        original_text: None,
+        public_error: public,
+      };
       if error_text_replacement.is_some() {
         new_error.original_text = Some(new_error.error_text.to_owned());
         new_error.error_text = error_text_replacement.unwrap();
@@ -283,8 +368,12 @@ impl<T> ConsiderCli<T> for Result<T, &str> {
   /// Changes the parameters of a possible error to the specified ones.
   fn consider_cli(self, error_text_replacement: Option<String>) -> Result<T, CliError> {
     self.map_err(|e| {
-      let mut new_error = CliError { message: e.to_owned() };
-      if error_text_replacement.is_some() { new_error.message = error_text_replacement.unwrap(); }
+      let mut new_error = CliError {
+        message: e.to_owned(),
+      };
+      if error_text_replacement.is_some() {
+        new_error.message = error_text_replacement.unwrap();
+      }
       new_error
     })
   }
@@ -294,7 +383,12 @@ impl<T> ConsiderCli<T> for Result<T, &str> {
 impl From<String> for ErrorResponse {
   /// Creates a new error from a string.
   fn from(value: String) -> Self {
-    Self { status_code: None, error_text: value, original_text: None, public_error: false }
+    Self {
+      status_code: None,
+      error_text: value,
+      original_text: None,
+      public_error: false,
+    }
   }
 }
 
@@ -311,7 +405,12 @@ impl From<String> for CliError {
 impl From<&str> for ErrorResponse {
   /// Creates a new error from a string.
   fn from(value: &str) -> Self {
-    Self { status_code: None, error_text: value.to_owned(), original_text: None, public_error: false }
+    Self {
+      status_code: None,
+      error_text: value.to_owned(),
+      original_text: None,
+      public_error: false,
+    }
   }
 }
 
@@ -320,7 +419,9 @@ impl From<&str> for ErrorResponse {
 impl From<&str> for CliError {
   /// Creates a new error from a string.
   fn from(value: &str) -> Self {
-    Self { message: value.to_owned() }
+    Self {
+      message: value.to_owned(),
+    }
   }
 }
 
@@ -331,9 +432,19 @@ macro_rules! impl_consider {
     #[cfg(feature = "salvo")]
     impl<T> Consider<T> for Result<T, $e> {
       /// Изменяет параметры возможной ошибки на указанные.
-      fn consider(self, status_code: Option<StatusCode>, error_text_replacement: Option<String>, public: bool) -> Result<T, ErrorResponse> {
+      fn consider(
+        self,
+        status_code: Option<StatusCode>,
+        error_text_replacement: Option<String>,
+        public: bool,
+      ) -> Result<T, ErrorResponse> {
         self.map_err(|e| {
-          let mut new_error = ErrorResponse { status_code, error_text: e.to_string(), original_text: None, public_error: public };
+          let mut new_error = ErrorResponse {
+            status_code,
+            error_text: e.to_string(),
+            original_text: None,
+            public_error: public,
+          };
           if error_text_replacement.is_some() {
             new_error.original_text = Some(new_error.error_text.to_owned());
             new_error.error_text = error_text_replacement.unwrap();
@@ -342,11 +453,13 @@ macro_rules! impl_consider {
         })
       }
     }
-    
+
     #[cfg(feature = "salvo")]
     impl From<$e> for ErrorResponse {
       /// Создаёт `ErrorResponse` из данной ошибки.
-      fn from(value: $e) -> Self { value.to_string().into() }
+      fn from(value: $e) -> Self {
+        value.to_string().into()
+      }
     }
   };
 }
@@ -360,17 +473,23 @@ macro_rules! impl_consider_cli {
       /// Изменяет параметры возможной ошибки на указанные.
       fn consider_cli(self, error_text_replacement: Option<String>) -> Result<T, CliError> {
         self.map_err(|e| {
-          let mut new_error = CliError { message: e.to_string() };
-          if error_text_replacement.is_some() { new_error.message = error_text_replacement.unwrap(); }
+          let mut new_error = CliError {
+            message: e.to_string(),
+          };
+          if error_text_replacement.is_some() {
+            new_error.message = error_text_replacement.unwrap();
+          }
           new_error
         })
       }
     }
-    
+
     #[cfg(feature = "reqwest")]
     impl From<$e> for CliError {
       /// Создаёт `CliError` из данной ошибки.
-      fn from(value: $e) -> Self { value.to_string().into() }
+      fn from(value: $e) -> Self {
+        value.to_string().into()
+      }
     }
   };
 }
@@ -384,8 +503,6 @@ impl_consider!(std::io::Error);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(std::env::VarError);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-impl_consider!(std::sync::mpsc::SendError);
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(std::sync::mpsc::RecvError);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(log::SetLoggerError);
@@ -397,6 +514,41 @@ impl_consider!(salvo::Error);
 impl_consider!(salvo::hyper::http::status::InvalidStatusCode);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(salvo::http::ParseError);
+
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+#[cfg(feature = "salvo")]
+impl<T, U> Consider<T> for Result<T, std::sync::mpsc::SendError<U>> {
+  /// Изменяет параметры возможной ошибки на указанные.
+  fn consider(
+    self,
+    status_code: Option<StatusCode>,
+    error_text_replacement: Option<String>,
+    public: bool,
+  ) -> Result<T, ErrorResponse> {
+    self.map_err(|e| {
+      let mut new_error = ErrorResponse {
+        status_code,
+        error_text: e.to_string(),
+        original_text: None,
+        public_error: public,
+      };
+      if error_text_replacement.is_some() {
+        new_error.original_text = Some(new_error.error_text.to_owned());
+        new_error.error_text = error_text_replacement.unwrap();
+      }
+      new_error
+    })
+  }
+}
+
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+#[cfg(feature = "salvo")]
+impl<U> From<std::sync::mpsc::SendError<U>> for ErrorResponse {
+  /// Создаёт `ErrorResponse` из данной ошибки.
+  fn from(value: std::sync::mpsc::SendError<U>) -> Self {
+    value.to_string().into()
+  }
+}
 
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(rmp_serde::encode::Error);
