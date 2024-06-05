@@ -13,9 +13,9 @@
 #[cfg(feature = "salvo")]
 #[macro_export]
 macro_rules! brotli { () => {
-  Compression::new()
+  salvo::prelude::Compression::new()
     .disable_all()
-    .enable_brotli(CompressionLevel::Minsize)
+    .enable_brotli(salvo::prelude::CompressionLevel::Minsize)
     .content_types(&[salvo::http::mime::APPLICATION_JSON])
     .force_priority(true)
     .min_length(10)

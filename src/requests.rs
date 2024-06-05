@@ -2,11 +2,12 @@
 
 use crate::prelude::*;
 
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-use serde::Serialize;
-
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+
+#[cfg(feature = "reqwest")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+use serde::Serialize;
 
 #[cfg(feature = "salvo")]
 use salvo::Request;

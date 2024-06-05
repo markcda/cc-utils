@@ -86,7 +86,7 @@ impl_oapi_endpoint_out!(OK, "text/plain");
 
 #[cfg(feature = "salvo")]
 #[macro_export]
-macro_rules! ok { () => { Ok(OK(fn_name!())) }; }
+macro_rules! ok { () => { Ok(OK(cc_utils::fn_name!())) }; }
 
 #[cfg(feature = "salvo")]
 #[salvo::async_trait]
@@ -164,14 +164,14 @@ impl_oapi_endpoint_out!(File, "application/octet-stream");
 /// ```
 #[cfg(feature = "salvo")]
 #[macro_export]
-macro_rules! file { ($e1:expr, $e2:expr) => { Ok(File($e1, $e2, fn_name!())) }; }
+macro_rules! file { ($e1:expr, $e2:expr) => { Ok(File($e1, $e2, cc_utils::fn_name!())) }; }
 
 #[cfg(feature = "salvo")]
 #[salvo::async_trait]
 impl ServerResponseWriter for File {
   async fn write(self, req: &mut Request, _depot: &mut Depot, res: &mut Response) {
     res.status_code(StatusCode::OK);
-    NamedFile::builder(&self.0).attached_name(&self.1).send(req.headers(), res).await;
+    NamedFile::builder(&self.0).attached_name(&self.1).use_last_modified(true).send(req.headers(), res).await;
     log::debug!("[{}] => Received and sent result 200 with file {}", self.2, self.1);
   }
 }

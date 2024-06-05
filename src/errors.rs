@@ -595,24 +595,9 @@ impl<U> From<std::sync::mpsc::SendError<U>> for ErrorResponse {
   }
 }
 
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-impl_consider_cli!(rmp_serde::encode::Error);
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-impl_consider_cli!(rmp_serde::decode::Error);
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-impl_consider_cli!(std::io::Error);
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-impl_consider_cli!(log::SetLoggerError);
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-impl_consider_cli!(serde_json::Error);
-
-#[cfg(feature = "reqwest")]
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-impl_consider_cli!(reqwest::Error);
-
-#[cfg(feature = "base64")]
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-impl_consider_cli!(base64::DecodeError);
+#[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+impl_consider!(salvo::http::header::ToStrError);
 
 #[cfg(feature = "bb8-redis")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
@@ -635,6 +620,7 @@ impl_consider!(mongodb::error::Error);
 impl_consider!(dotenv::Error);
 
 #[cfg(feature = "log4rs")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(log4rs::config::runtime::ConfigErrors);
 
 #[cfg(feature = "sea-orm")]
@@ -652,3 +638,34 @@ impl_consider!(reqwest::Error);
 #[cfg(feature = "base64")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(base64::DecodeError);
+
+#[cfg(feature = "uuid")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+impl_consider!(uuid::Error);
+
+#[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+impl_consider!(salvo::http::errors::StatusError);
+
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+impl_consider_cli!(rmp_serde::encode::Error);
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+impl_consider_cli!(rmp_serde::decode::Error);
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+impl_consider_cli!(std::io::Error);
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+impl_consider_cli!(log::SetLoggerError);
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+impl_consider_cli!(serde_json::Error);
+
+#[cfg(feature = "reqwest")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+impl_consider_cli!(reqwest::Error);
+
+#[cfg(feature = "base64")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+impl_consider_cli!(base64::DecodeError);
+
+#[cfg(feature = "uuid")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+impl_consider_cli!(uuid::Error);
