@@ -640,6 +640,10 @@ impl_consider!(base64::DecodeError);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(uuid::Error);
 
+#[cfg(feature = "sqlx")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+impl_consider!(sqlx::Error);
+
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(salvo::http::errors::StatusError);
