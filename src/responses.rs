@@ -108,7 +108,7 @@ impl_oapi_endpoint_out!(Plain, "text/plain");
 
 #[cfg(feature = "salvo")]
 #[macro_export]
-macro_rules! plain { ($e:expr) => { Ok(Plain($e, fn_name!())) }; }
+macro_rules! plain { ($e:expr) => { Ok(Plain($e, cc_utils::fn_name!())) }; }
 
 #[cfg(feature = "salvo")]
 #[salvo::async_trait]
@@ -130,7 +130,7 @@ impl_oapi_endpoint_out!(Html, "text/html");
 
 #[cfg(feature = "salvo")]
 #[macro_export]
-macro_rules! html { ($e:expr) => { Ok(Html($e, fn_name!())) }; }
+macro_rules! html { ($e:expr) => { Ok(Html($e, cc_utils::fn_name!())) }; }
 
 #[cfg(feature = "salvo")]
 #[salvo::async_trait]
@@ -208,7 +208,7 @@ impl_oapi_endpoint_out_t!(MsgPack, "application/msgpack");
 
 #[cfg(feature = "salvo")]
 #[macro_export]
-macro_rules! msgpack { ($e:expr) => { Ok(MsgPack($e, fn_name!())) }; }
+macro_rules! msgpack { ($e:expr) => { Ok(MsgPack($e, cc_utils::fn_name!())) }; }
 
 #[cfg(feature = "salvo")]
 #[salvo::async_trait]

@@ -39,10 +39,7 @@ pub struct CliError {
 impl ServerResponseWriter for ErrorResponse {
   /// Method for sending an error message to the client.
   async fn write(self, _req: &mut Request, _depot: &mut Depot, res: &mut Response) {
-    res.status_code(
-      self.status_code
-        .unwrap_or(StatusCode::INTERNAL_SERVER_ERROR),
-    );
+    res.status_code(self.status_code.unwrap_or(StatusCode::INTERNAL_SERVER_ERROR));
     if !self.public_error {
       let public_error_desc = match self.status_code {
         Some(StatusCode::BAD_REQUEST) => "Bad request.",
@@ -57,21 +54,21 @@ impl ServerResponseWriter for ErrorResponse {
         _ => "Specific error. Check with the administrator for details.",
       };
       log::error!(
-                "Error with code {:?}: \"{}\", client will get: \"{}\"",
-                self.status_code,
-                self.error_text,
-                public_error_desc
-            );
+        "Error with code {:?}: \"{}\", client will get: \"{}\"",
+        self.status_code,
+        self.error_text,
+        public_error_desc
+      );
       if self.original_text.is_some() {
         log::error!("The original error text: {:?}", self.original_text.unwrap());
       }
       res.render(public_error_desc);
     } else {
       log::error!(
-                "Error with code {:?}: \"{}\"",
-                self.status_code,
-                self.error_text
-            );
+        "Error with code {:?}: \"{}\"",
+        self.status_code,
+        self.error_text
+      );
       if self.original_text.is_some() {
         log::error!("The original error text: {:?}", self.original_text.unwrap());
       }
