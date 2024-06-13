@@ -683,7 +683,30 @@ impl_consider_cli!(uuid::Error);
 
 #[cfg(feature = "web-sys")]
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-impl_consider_cli!(web_sys::wasm_bindgen::JsValue);
+impl<T> ConsiderCli<T> for Result<T, web_sys::wasm_bindgen::JsValue> {
+  /// Изменяет параметры возможной ошибки на указанные.
+  fn consider_cli(self, error_text_replacement: Option<String>) -> Result<T, CliError> {
+    self.map_err(|e| {
+      let mut new_error = CliError {
+        message: e.to_string(),
+      };
+      if error_text_replacement.is_some() {
+        new_error.message = error_text_replacement.unwrap();
+      }
+      new_error
+    })
+  }
+}
+
+#[cfg(feature = "web-sys")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+impl From<web_sys::wasm_bindgen::JsValue> for CliError {
+  /// Создаёт `CliError` из данной ошибки.
+  fn from(value: web_sys::wasm_bindgen::JsValue) -> Self {
+    let s = value.as_string().unwrap_or_default();
+    format!("Ошибка в JavaScript: {}", s).into()
+  }
+}
 
 #[cfg(feature = "web-ws")]
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
