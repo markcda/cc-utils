@@ -688,7 +688,7 @@ impl<T> ConsiderCli<T> for Result<T, web_sys::wasm_bindgen::JsValue> {
   fn consider_cli(self, error_text_replacement: Option<String>) -> Result<T, CliError> {
     self.map_err(|e| {
       let mut new_error = CliError {
-        message: e.to_string(),
+        message: e.as_string().unwrap_or_default(),
       };
       if error_text_replacement.is_some() {
         new_error.message = error_text_replacement.unwrap();
