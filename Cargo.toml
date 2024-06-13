@@ -1,7 +1,7 @@
 [package]
 name = "cc-utils"
 description = "Rust Fullstack utils (strict error handling, `Consider` trait, MessagePack support, etc.) for Salvo and Yew/Dioxus/Leptos/*"
-version = "0.2.20"
+version = "0.2.21"
 edition = "2021"
 license = "MIT"
 authors = ["Klimenty Titov <aclo.create@gmail.com>"]
