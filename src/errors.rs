@@ -3,6 +3,7 @@
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 use std::any::Any;
+use std::fmt::Formatter;
 
 #[cfg(feature = "salvo")]
 use salvo::http::StatusCode;
@@ -19,7 +20,6 @@ use salvo::Writer as ServerResponseWriter;
 pub type BoxDynError = Box<dyn std::error::Error + 'static + Send + Sync>;
 
 /// Data structure responsible for server errors.
-#[cfg(feature = "salvo")]
 #[derive(Debug)]
 pub struct ErrorResponse {
   pub status_code: Option<StatusCode>,
@@ -29,11 +29,17 @@ pub struct ErrorResponse {
 }
 
 /// Data structure responsible for client errors.
-#[cfg(feature = "reqwest")]
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 #[derive(Debug)]
 pub struct CliError {
   pub message: String,
+}
+
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+impl std::fmt::Display for CliError {
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    f.write_str(&format!("{}", self.message))
+  }
 }
 
 #[cfg(feature = "salvo")]
