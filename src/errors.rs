@@ -504,6 +504,8 @@ impl_consider!(rmp_serde::decode::Error);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(std::io::Error);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+impl_consider!(std::string::FromUtf8Error);
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(std::env::VarError);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(std::sync::mpsc::RecvError);
@@ -659,6 +661,8 @@ impl_consider_cli!(rmp_serde::decode::Error);
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(std::io::Error);
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+impl_consider_cli!(std::string::FromUtf8Error);
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(log::SetLoggerError);
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(serde_json::Error);
@@ -676,3 +680,11 @@ impl_consider_cli!(base64::DecodeError);
 #[cfg(feature = "uuid")]
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(uuid::Error);
+
+#[cfg(feature = "web-sys")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+impl_consider_cli!(web_sys::wasm_bindgen::JsValue);
+
+#[cfg(feature = "web-ws")]
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+impl_consider_cli!(ws_stream_wasm::WsErr);
