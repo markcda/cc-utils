@@ -16,6 +16,8 @@ use salvo::{Depot, Request, Response};
 #[cfg(feature = "salvo")]
 use salvo::Writer as ServerResponseWriter;
 
+pub type BoxDynError = Box<dyn std::error::Error + 'static + Send + Sync>;
+
 /// Data structure responsible for server errors.
 #[cfg(feature = "salvo")]
 #[derive(Debug)]
@@ -509,6 +511,8 @@ impl_consider!(std::sync::mpsc::RecvError);
 impl_consider!(log::SetLoggerError);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(serde_json::Error);
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+impl_consider!(BoxDynError);
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
@@ -552,7 +556,7 @@ impl<T> Consider<T> for Result<T, Option<&Box<dyn Any + Send + Sync>>> {
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl From<Option<&Box<dyn Any + Send + Sync>>> for ErrorResponse {
   /// Создаёт `ErrorResponse` из данной ошибки.
-  fn from(_value: Option<&Box<(dyn std::any::Any + Send + Sync + 'static)>>) -> Self {
+  fn from(_value: Option<&Box<(dyn Any + Send + Sync + 'static)>>) -> Self {
     "Depot obtain failed!".into()
   }
 }
@@ -658,6 +662,8 @@ impl_consider_cli!(std::io::Error);
 impl_consider_cli!(log::SetLoggerError);
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(serde_json::Error);
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+impl_consider_cli!(BoxDynError);
 
 #[cfg(feature = "reqwest")]
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
