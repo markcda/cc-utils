@@ -6,16 +6,17 @@ use crate::prelude::*;
 use serde::Deserialize;
 
 #[cfg(feature = "reqwest")]
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 use serde::Serialize;
 
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 use salvo::Request;
 
 #[cfg(feature = "reqwest")]
 use reqwest::RequestBuilder;
 
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[salvo::async_trait]
 pub trait MsgPackParser {
   async fn parse_msgpack<'de, T: Deserialize<'de>>(&'de mut self) -> MResult<T>;
@@ -23,6 +24,7 @@ pub trait MsgPackParser {
 }
 
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[salvo::async_trait]
 impl MsgPackParser for Request {
   /// Parse MessagePack body as type `T` from request with default max size limit.
@@ -44,9 +46,7 @@ impl MsgPackParser for Request {
           payload.as_ref()
         };
         log::debug!("{:?}", payload);
-        return Ok(
-          rmp_serde::from_slice::<T>(payload).consider(Some(StatusCode::BAD_REQUEST), None, true)?
-        );
+        return rmp_serde::from_slice::<T>(payload).consider(Some(StatusCode::BAD_REQUEST), None, true)
       }
     }
     Err(
