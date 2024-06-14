@@ -1,7 +1,7 @@
 [package]
 name = "cc-utils"
 description = "Rust Fullstack utils (strict error handling, `Consider` trait, MessagePack support, etc.) for Salvo and Yew/Dioxus/Leptos/*"
-version = "0.2.24"
+version = "0.3.0"
 edition = "2021"
 license = "MIT"
 authors = ["Klimenty Titov <aclo.create@gmail.com>"]
@@ -32,7 +32,7 @@ dotenv = { version = "0.15", optional = true }
 log = "0.4"
 log4rs = { version = "1.2", optional = true }
 mongodb = { version = "2.8", optional = true }
-rmp-serde = "1.1"
+rmp-serde = "1.3"
 salvo = { version = "0.68", features = ["oapi", "rustls"], optional = true }
 sea-orm = { version = "0.12", optional = true }
 serde = { version = "1", features = ["derive"] }

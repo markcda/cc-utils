@@ -8,9 +8,6 @@ pub use crate::brotli;
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 pub use crate::requests::MsgPackParser;
 
-#[cfg(feature = "reqwest")]
-pub use crate::requests::MsgPackBuilder;
-
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 pub use crate::results::MResult;
 

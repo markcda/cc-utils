@@ -2,18 +2,13 @@
 
 use crate::prelude::*;
 
+#[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 use serde::Deserialize;
-
-#[cfg(feature = "reqwest")]
-use serde::Serialize;
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 use salvo::Request;
-
-#[cfg(feature = "reqwest")]
-use reqwest::RequestBuilder;
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
@@ -57,67 +52,5 @@ impl MsgPackParser for Request {
         public_error: true
       }
     )
-  }
-}
-
-#[cfg(feature = "reqwest")]
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-pub trait MsgPackBuilder {
-  fn msgpack<T: Serialize + ?Sized>(self, msgpack: &T) -> MResult<RequestBuilder>;
-}
-
-#[cfg(feature = "reqwest")]
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-impl MsgPackBuilder for RequestBuilder {
-  fn msgpack<T: Serialize + ?Sized>(self, msgpack: &T) -> MResult<RequestBuilder> {
-    let (cli, mut req) = self.build_split();
-    let mut error = None;
-    if let Ok(req) = req.as_mut() {
-      match rmp_serde::to_vec(msgpack) {
-        Ok(body) => {
-          if !req.headers().contains_key(reqwest::header::CONTENT_TYPE) {
-            req.headers_mut().insert(reqwest::header::CONTENT_TYPE, reqwest::header::HeaderValue::from_static("application/msgpack"));
-          }
-          *req.body_mut() = Some(body.into());
-        },
-        Err(err) => { error = Some(err); },
-      }
-    }
-    if let Some(err) = error {
-      Err(err.to_string().into())
-    } else {
-      Ok(RequestBuilder::from_parts(cli, req?))
-    }
-  }
-}
-
-#[cfg(feature = "reqwest")]
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-pub trait MsgPackBuilder {
-  fn msgpack<T: Serialize + ?Sized>(self, msgpack: &T) -> CResult<reqwest::Request>;
-}
-
-#[cfg(feature = "reqwest")]
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-impl MsgPackBuilder for RequestBuilder {
-  fn msgpack<T: Serialize + ?Sized>(self, msgpack: &T) -> CResult<reqwest::Request> {
-    let mut req = self.build();
-    let mut error = None;
-    if let Ok(req) = req.as_mut() {
-      match rmp_serde::to_vec(msgpack) {
-        Ok(body) => {
-          if !req.headers().contains_key(reqwest::header::CONTENT_TYPE) {
-            req.headers_mut().insert(reqwest::header::CONTENT_TYPE, reqwest::header::HeaderValue::from_static("application/msgpack"));
-          }
-          *req.body_mut() = Some(body.into());
-        },
-        Err(err) => { error = Some(err); },
-      }
-    }
-    if let Some(err) = error {
-      Err(err.to_string().into())
-    } else {
-      Ok(self.execute(req?))
-    }
   }
 }
