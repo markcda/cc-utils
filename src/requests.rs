@@ -117,7 +117,7 @@ impl MsgPackBuilder for RequestBuilder {
     if let Some(err) = error {
       Err(err.to_string().into())
     } else {
-      Ok(req?)
+      Ok(self.execute(req?))
     }
   }
 }
