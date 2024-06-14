@@ -8,20 +8,25 @@ use std::any::Any;
 use std::fmt::Formatter;
 
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 use salvo::http::StatusCode;
 
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 use salvo::oapi::{EndpointOutRegister, ToSchema};
 
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 use salvo::{Depot, Request, Response};
 
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 use salvo::Writer as ServerResponseWriter;
 
 pub type BoxDynError = Box<dyn std::error::Error + 'static + Send + Sync>;
 
 /// Data structure responsible for server errors.
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[derive(Debug)]
 pub struct ErrorResponse {
   #[cfg(feature = "salvo")]
@@ -47,6 +52,7 @@ impl std::fmt::Display for CliError {
 }
 
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[salvo::async_trait]
 impl ServerResponseWriter for ErrorResponse {
   /// Method for sending an error message to the client.
@@ -90,6 +96,7 @@ impl ServerResponseWriter for ErrorResponse {
 }
 
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl EndpointOutRegister for ErrorResponse {
   /// Registers error types for OpenAPI.
   fn register(components: &mut salvo::oapi::Components, operation: &mut salvo::oapi::Operation) {
@@ -132,6 +139,7 @@ impl EndpointOutRegister for ErrorResponse {
 }
 
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[allow(dead_code)]
 impl ErrorResponse {
   /// Private error BAD REQUEST (400).
@@ -255,6 +263,7 @@ impl ErrorResponse {
 
 /// A trait that allows you to transform any error into an `ErrorResponse` by assigning additional parameters.
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 pub trait Consider<T> {
   fn consider(
     self,
@@ -271,6 +280,7 @@ pub trait ConsiderCli<T> {
 }
 
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl<T> Consider<T> for Result<T, ErrorResponse> {
   /// Changes the parameters of a possible error to the specified ones.
   fn consider(
@@ -311,6 +321,7 @@ impl<T> ConsiderCli<T> for Result<T, CliError> {
 }
 
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl<T> Consider<T> for Result<T, String> {
   /// Changes the parameters of a possible error to the specified ones.
   fn consider(
@@ -351,6 +362,7 @@ impl<T> ConsiderCli<T> for Result<T, String> {
 }
 
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl<T> Consider<T> for Result<T, &str> {
   /// Changes the parameters of a possible error to the specified ones.
   fn consider(
@@ -397,6 +409,7 @@ impl From<String> for ErrorResponse {
   /// Creates a new error from a string.
   fn from(value: String) -> Self {
     Self {
+      #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
       status_code: None,
       error_text: value,
       original_text: None,
@@ -419,6 +432,7 @@ impl From<&str> for ErrorResponse {
   /// Creates a new error from a string.
   fn from(value: &str) -> Self {
     Self {
+      #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
       status_code: None,
       error_text: value.to_owned(),
       original_text: None,
@@ -443,6 +457,7 @@ impl From<&str> for CliError {
 macro_rules! impl_consider {
   ($e:ty) => {
     #[cfg(feature = "salvo")]
+    #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
     impl<T> Consider<T> for Result<T, $e> {
       /// Изменяет параметры возможной ошибки на указанные.
       fn consider(
@@ -468,6 +483,7 @@ macro_rules! impl_consider {
     }
 
     #[cfg(feature = "salvo")]
+    #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
     impl From<$e> for ErrorResponse {
       /// Создаёт `ErrorResponse` из данной ошибки.
       fn from(value: $e) -> Self {

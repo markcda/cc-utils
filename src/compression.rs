@@ -11,6 +11,7 @@
 /// let router = Router::with_hoop(brotli!()).path("new-compressed-json").get(hello_compressed_json);
 /// ```
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[macro_export]
 macro_rules! brotli { () => {
   salvo::prelude::Compression::new()

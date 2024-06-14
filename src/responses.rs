@@ -53,6 +53,7 @@ macro_rules! fn_name {
 
 /// Macro for automating `EndpointOutRegister` implementations (for simple types)
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 macro_rules! impl_oapi_endpoint_out {
   ($t:tt, $c:expr) => {
     impl EndpointOutRegister for $t {
@@ -69,6 +70,7 @@ macro_rules! impl_oapi_endpoint_out {
 
 /// Macro for automating `EndpointOutRegister` implementations (for template types)
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 macro_rules! impl_oapi_endpoint_out_t {
   ($t:tt, $c:expr) => {
     impl<T> EndpointOutRegister for $t<T> {

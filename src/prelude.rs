@@ -5,6 +5,7 @@
 pub use crate::brotli;
 
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 pub use crate::requests::MsgPackParser;
 
 #[cfg(feature = "reqwest")]
@@ -17,6 +18,7 @@ pub use crate::results::MResult;
 pub use crate::results::CResult;
 
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 pub use crate::responses::{OK, Plain, Html, File, Json, MsgPack};
 
 #[cfg(feature = "reqwest")]
