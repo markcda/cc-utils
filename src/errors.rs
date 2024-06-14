@@ -4,6 +4,9 @@
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 use std::any::Any;
 
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+use std::fmt::Formatter;
+
 #[cfg(feature = "salvo")]
 use salvo::http::StatusCode;
 
@@ -22,6 +25,7 @@ pub type BoxDynError = Box<dyn std::error::Error + 'static + Send + Sync>;
 #[derive(Debug)]
 pub struct ErrorResponse {
   #[cfg(feature = "salvo")]
+  #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
   pub status_code: Option<StatusCode>,
   pub error_text: String,
   pub original_text: Option<String>,
