@@ -405,6 +405,7 @@ impl<T> ConsiderCli<T> for Result<T, &str> {
 }
 
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl From<String> for ErrorResponse {
   /// Creates a new error from a string.
   fn from(value: String) -> Self {
@@ -428,6 +429,7 @@ impl From<String> for CliError {
 }
 
 #[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl From<&str> for ErrorResponse {
   /// Creates a new error from a string.
   fn from(value: &str) -> Self {
@@ -497,7 +499,6 @@ macro_rules! impl_consider {
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 macro_rules! impl_consider_cli {
   ($e:ty) => {
-    #[cfg(feature = "reqwest")]
     impl<T> ConsiderCli<T> for Result<T, $e> {
       /// Изменяет параметры возможной ошибки на указанные.
       fn consider_cli(self, error_text_replacement: Option<String>) -> Result<T, CliError> {
@@ -513,7 +514,6 @@ macro_rules! impl_consider_cli {
       }
     }
 
-    #[cfg(feature = "reqwest")]
     impl From<$e> for CliError {
       /// Создаёт `CliError` из данной ошибки.
       fn from(value: $e) -> Self {
