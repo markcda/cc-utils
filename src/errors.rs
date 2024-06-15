@@ -39,7 +39,7 @@ pub struct ErrorResponse {
 
 /// Data structure responsible for client errors.
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct CliError {
   pub message: String,
 }
