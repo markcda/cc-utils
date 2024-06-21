@@ -273,7 +273,6 @@ pub trait Consider<T> {
   ) -> Result<T, ErrorResponse>;
 }
 
-#[cfg(feature = "reqwest")]
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 pub trait ConsiderCli<T> {
   fn consider_cli(self, error_text_replacement: Option<String>) -> Result<T, CliError>;
@@ -305,7 +304,6 @@ impl<T> Consider<T> for Result<T, ErrorResponse> {
   }
 }
 
-#[cfg(feature = "reqwest")]
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl<T> ConsiderCli<T> for Result<T, CliError> {
   /// Changes the parameters of a possible error to the specified ones.
@@ -346,7 +344,6 @@ impl<T> Consider<T> for Result<T, String> {
   }
 }
 
-#[cfg(feature = "reqwest")]
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl<T> ConsiderCli<T> for Result<T, String> {
   /// Changes the parameters of a possible error to the specified ones.
@@ -387,7 +384,6 @@ impl<T> Consider<T> for Result<T, &str> {
   }
 }
 
-#[cfg(feature = "reqwest")]
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl<T> ConsiderCli<T> for Result<T, &str> {
   /// Changes the parameters of a possible error to the specified ones.
@@ -419,7 +415,6 @@ impl From<String> for ErrorResponse {
   }
 }
 
-#[cfg(feature = "reqwest")]
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl From<String> for CliError {
   /// Creates a new error from a string.
@@ -443,7 +438,6 @@ impl From<&str> for ErrorResponse {
   }
 }
 
-#[cfg(feature = "reqwest")]
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl From<&str> for CliError {
   /// Creates a new error from a string.
