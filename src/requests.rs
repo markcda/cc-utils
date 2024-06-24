@@ -12,7 +12,7 @@ use salvo::Request;
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-#[salvo::async_trait]
+#[allow(async_fn_in_trait)]
 pub trait MsgPackParser {
   async fn parse_msgpack<'de, T: Deserialize<'de>>(&'de mut self) -> MResult<T>;
   async fn parse_msgpack_with_max_size<'de, T: Deserialize<'de>>(&'de mut self, max_size: usize) -> MResult<T>;
@@ -20,7 +20,6 @@ pub trait MsgPackParser {
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-#[salvo::async_trait]
 impl MsgPackParser for Request {
   /// Parse MessagePack body as type `T` from request with default max size limit.
   #[inline]
