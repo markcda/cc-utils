@@ -5,7 +5,7 @@
 use std::any::Any;
 
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-use std::fmt::Formatter;
+use std::fmt::Write;
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
@@ -37,6 +37,21 @@ pub struct ErrorResponse {
   pub public_error: bool,
 }
 
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+impl std::fmt::Display for ErrorResponse {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    f.write_str(&format!(
+      r#"Error found! Status code to return - {}, original error text - "{}", public error text - "{}""#,
+      self.status_code.unwrap_or(StatusCode::INTERNAL_SERVER_ERROR).as_str(),
+      self.original_text.as_ref().unwrap_or(&"".to_string()),
+      self.error_text.as_str(),
+    ))
+  }
+}
+
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+impl std::error::Error for ErrorResponse {}
+
 /// Data structure responsible for client errors.
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 #[derive(Debug, Clone)]
@@ -46,7 +61,7 @@ pub struct CliError {
 
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl std::fmt::Display for CliError {
-  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     f.write_str(&format!("{}", self.message))
   }
 }
