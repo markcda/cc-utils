@@ -579,6 +579,8 @@ impl_consider!(BoxDynError);
 impl_consider!(std::num::ParseIntError);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(std::num::ParseFloatError);
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+impl_consider!(tracing::subscriber::SetGlobalDefaultError);
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
