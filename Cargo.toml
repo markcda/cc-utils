@@ -34,7 +34,7 @@ log = "0.4"
 mongodb = { version = "2.8", optional = true }
 reqwest = { git = "https://github.com/markcda/reqwest.git", branch = "msgpack-support", default-features = false, features = ["json", "rustls-tls"], optional = true }
 rmp-serde = "1.3"
-salvo = { version = "0.68.4", features = ["oapi", "rustls"], optional = true }
+salvo = { version = "0.68.5", features = ["oapi", "rustls"], optional = true }
 sea-orm = { version = "0.12", optional = true }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
