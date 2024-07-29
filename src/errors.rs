@@ -714,6 +714,10 @@ impl_consider!(sqlx::Error);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(salvo::http::errors::StatusError);
 
+#[cfg(feature = "tracing-appender")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+impl_consider!(tracing_appender::rolling::InitError);
+
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(rmp_serde::encode::Error);
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
