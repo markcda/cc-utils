@@ -39,3 +39,5 @@ pub use salvo::oapi::endpoint;
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 pub use salvo::http::StatusCode;
+
+pub use crate::tracing::Instrument as TracingInstrument;
