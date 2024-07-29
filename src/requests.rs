@@ -40,7 +40,7 @@ impl MsgPackParser for Request {
           payload.as_ref()
         };
         log::debug!("{:?}", payload);
-        return rmp_serde::from_slice::<T>(payload).consider(Some(StatusCode::BAD_REQUEST), None, true)
+        return rmp_serde::from_slice::<T>(payload).consider(Some(StatusCode::BAD_REQUEST), None::<String>, true)
       }
     }
     Err(

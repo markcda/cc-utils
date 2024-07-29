@@ -256,12 +256,12 @@ impl ErrorResponse {
   }
 
   /// Changes error message text.
-  pub fn with_text(&mut self, text: String) -> &mut Self {
+  pub fn with_text(&mut self, text: impl Into<String>) -> &mut Self {
     match self.original_text {
       None => self.original_text = Some(self.error_text.to_owned()),
       Some(_) => {}
     }
-    self.error_text = text;
+    self.error_text = text.into();
     self
   }
 
@@ -283,7 +283,7 @@ pub trait Consider<T> {
   fn consider(
     self,
     status_code: Option<StatusCode>,
-    error_text_replacement: Option<String>,
+    error_text_replacement: Option<impl Into<String>>,
     public: bool,
   ) -> Result<T, ErrorResponse>;
 }
@@ -300,7 +300,7 @@ impl<T> Consider<T> for Result<T, ErrorResponse> {
   fn consider(
     self,
     status_code: Option<StatusCode>,
-    error_text_replacement: Option<String>,
+    error_text_replacement: Option<impl Into<String>>,
     public: bool,
   ) -> Result<T, ErrorResponse> {
     self.map_err(|e| {
@@ -312,7 +312,7 @@ impl<T> Consider<T> for Result<T, ErrorResponse> {
       };
       if error_text_replacement.is_some() {
         new_error.original_text = Some(new_error.error_text.to_owned());
-        new_error.error_text = error_text_replacement.unwrap();
+        new_error.error_text = error_text_replacement.unwrap().into();
       }
       new_error
     })
@@ -340,7 +340,7 @@ impl<T> Consider<T> for Result<T, String> {
   fn consider(
     self,
     status_code: Option<StatusCode>,
-    error_text_replacement: Option<String>,
+    error_text_replacement: Option<impl Into<String>>,
     public: bool,
   ) -> Result<T, ErrorResponse> {
     self.map_err(|e| {
@@ -352,7 +352,7 @@ impl<T> Consider<T> for Result<T, String> {
       };
       if error_text_replacement.is_some() {
         new_error.original_text = Some(new_error.error_text.to_owned());
-        new_error.error_text = error_text_replacement.unwrap();
+        new_error.error_text = error_text_replacement.unwrap().into();
       }
       new_error
     })
@@ -365,7 +365,7 @@ impl<T> Consider<T> for anyhow::Result<T> {
   fn consider(
     self,
     status_code: Option<StatusCode>,
-    error_text_replacement: Option<String>,
+    error_text_replacement: Option<impl Into<String>>,
     public: bool,
   ) -> Result<T, ErrorResponse> {
     self.map_err(|e| {
@@ -377,7 +377,7 @@ impl<T> Consider<T> for anyhow::Result<T> {
       };
       if error_text_replacement.is_some() {
         new_error.original_text = Some(new_error.error_text.to_owned());
-        new_error.error_text = error_text_replacement.unwrap();
+        new_error.error_text = error_text_replacement.unwrap().into();
       }
       new_error
     })
@@ -405,7 +405,7 @@ impl<T> Consider<T> for Result<T, &str> {
   fn consider(
     self,
     status_code: Option<StatusCode>,
-    error_text_replacement: Option<String>,
+    error_text_replacement: Option<impl Into<String>>,
     public: bool,
   ) -> Result<T, ErrorResponse> {
     self.map_err(|e| {
@@ -417,7 +417,7 @@ impl<T> Consider<T> for Result<T, &str> {
       };
       if error_text_replacement.is_some() {
         new_error.original_text = Some(new_error.error_text.to_owned());
-        new_error.error_text = error_text_replacement.unwrap();
+        new_error.error_text = error_text_replacement.unwrap().into();
       }
       new_error
     })
@@ -499,7 +499,7 @@ macro_rules! impl_consider {
       fn consider(
         self,
         status_code: Option<StatusCode>,
-        error_text_replacement: Option<String>,
+        error_text_replacement: Option<impl Into<String>>,
         public: bool,
       ) -> Result<T, ErrorResponse> {
         self.map_err(|e| {
@@ -511,7 +511,7 @@ macro_rules! impl_consider {
           };
           if error_text_replacement.is_some() {
             new_error.original_text = Some(new_error.error_text.to_owned());
-            new_error.error_text = error_text_replacement.unwrap();
+            new_error.error_text = error_text_replacement.unwrap().into();
           }
           new_error
         })
@@ -599,7 +599,7 @@ impl<T> Consider<T> for Result<T, Option<&Box<dyn Any + Send + Sync>>> {
   fn consider(
     self,
     status_code: Option<StatusCode>,
-    error_text_replacement: Option<String>,
+    error_text_replacement: Option<impl Into<String>>,
     public: bool,
   ) -> Result<T, ErrorResponse> {
     self.map_err(|_| {
@@ -611,7 +611,7 @@ impl<T> Consider<T> for Result<T, Option<&Box<dyn Any + Send + Sync>>> {
       };
       if error_text_replacement.is_some() {
         new_error.original_text = Some(new_error.error_text.to_owned());
-        new_error.error_text = error_text_replacement.unwrap();
+        new_error.error_text = error_text_replacement.unwrap().into();
       }
       new_error
     })
@@ -634,7 +634,7 @@ impl<T, U> Consider<T> for Result<T, std::sync::mpsc::SendError<U>> {
   fn consider(
     self,
     status_code: Option<StatusCode>,
-    error_text_replacement: Option<String>,
+    error_text_replacement: Option<impl Into<String>>,
     public: bool,
   ) -> Result<T, ErrorResponse> {
     self.map_err(|e| {
@@ -646,7 +646,7 @@ impl<T, U> Consider<T> for Result<T, std::sync::mpsc::SendError<U>> {
       };
       if error_text_replacement.is_some() {
         new_error.original_text = Some(new_error.error_text.to_owned());
-        new_error.error_text = error_text_replacement.unwrap();
+        new_error.error_text = error_text_replacement.unwrap().into();
       }
       new_error
     })
