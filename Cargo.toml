@@ -24,6 +24,7 @@ web-sys = ["dep:web-sys"]
 web-ws = ["dep:ws_stream_wasm"]
 
 [dependencies]
+anyhow = "1.0"
 base64 = { version = "0.22", optional = true }
 bb8 = { version = "0.8", optional = true }
 bb8-mongodb = { version = "0.2", optional = true }

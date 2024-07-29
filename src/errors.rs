@@ -359,6 +359,31 @@ impl<T> Consider<T> for Result<T, String> {
   }
 }
 
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+impl<T> Consider<T> for anyhow::Result<T> {
+  /// Changes the parameters of a possible error to the specified ones.
+  fn consider(
+    self,
+    status_code: Option<StatusCode>,
+    error_text_replacement: Option<String>,
+    public: bool,
+  ) -> Result<T, ErrorResponse> {
+    self.map_err(|e| {
+      let mut new_error = ErrorResponse {
+        status_code,
+        error_text: e.to_string(),
+        original_text: None,
+        public_error: public,
+      };
+      if error_text_replacement.is_some() {
+        new_error.original_text = Some(new_error.error_text.to_owned());
+        new_error.error_text = error_text_replacement.unwrap();
+      }
+      new_error
+    })
+  }
+}
+
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl<T> ConsiderCli<T> for Result<T, String> {
   /// Changes the parameters of a possible error to the specified ones.
