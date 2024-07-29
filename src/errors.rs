@@ -86,24 +86,24 @@ impl ServerResponseWriter for ErrorResponse {
         }
         _ => "Specific error. Check with the administrator for details.",
       };
-      log::error!(
+      tracing::error!(
         "Error with code {:?}: \"{}\", client will get: \"{}\"",
         self.status_code,
         self.error_text,
         public_error_desc
       );
       if self.original_text.is_some() {
-        log::error!("The original error text: {:?}", self.original_text.unwrap());
+        tracing::error!("The original error text: {:?}", self.original_text.unwrap());
       }
       res.render(public_error_desc);
     } else {
-      log::error!(
+      tracing::error!(
         "Error with code {:?}: \"{}\"",
         self.status_code,
         self.error_text
       );
       if self.original_text.is_some() {
-        log::error!("The original error text: {:?}", self.original_text.unwrap());
+        tracing::error!("The original error text: {:?}", self.original_text.unwrap());
       }
       res.render(&self.error_text);
     }
@@ -685,10 +685,6 @@ impl_consider!(mongodb::error::Error);
 #[cfg(feature = "dotenv")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(dotenv::Error);
-
-#[cfg(feature = "log4rs")]
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-impl_consider!(log4rs::config::runtime::ConfigErrors);
 
 #[cfg(feature = "sea-orm")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
