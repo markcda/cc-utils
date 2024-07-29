@@ -31,7 +31,7 @@ bb8-mongodb = { version = "0.2", optional = true }
 bb8-redis = { version = "0.15", optional = true }
 dotenv = { version = "0.15", optional = true }
 log = "0.4"
-log4rs = { git = "https://github.com/markcda/log4rs-tracing.git", branch = "rolling-config-expose", optional = true }
+log4rs = { git = "https://github.com/markcda/log4rs-tracing.git", optional = true }
 mongodb = { version = "2.8", optional = true }
 reqwest = { git = "https://github.com/markcda/reqwest.git", branch = "msgpack-support", default-features = false, features = ["json", "rustls-tls"], optional = true }
 rmp-serde = "1.3"
