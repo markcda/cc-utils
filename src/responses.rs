@@ -219,9 +219,20 @@ macro_rules! json { ($json_data:expr) => { Ok(Json($json_data, cc_utils::fn_name
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[salvo::async_trait]
 impl<T: Serialize + Send> ServerResponseWriter for Json<T> {
-  async fn write(self, _req: &mut Request, _depot: &mut Depot, res: &mut Response) {
+  async fn write(self, req: &mut Request, depot: &mut Depot, res: &mut Response) {
     res.status_code(StatusCode::OK);
-    res.render(salvo::writing::Json(self.0));
+    match serde_json::to_string(&self.0) {
+      Ok(s) => {
+        res.headers_mut().insert(CONTENT_TYPE, HeaderValue::from_static("application/json; charset=utf-8"));
+        log::debug!("[{}] => Sending JSON: {:?}", self.1, s.as_str());
+        res.write_body(s).ok();
+        log::debug!("[{}] => Received and sent result 200 with JSON", self.1);
+      }
+      Err(e) => {
+        log::error!("[{}] => Failed to serialize data: {:?}", e, self.1);
+        ErrorResponse::from("Failed to serialize data.").with_500().build().write(req, depot, res).await;
+      }
+    }
     log::debug!("[{}] => Received and sent result 200 with JSON", self.1);
   }
 }
