@@ -24,7 +24,7 @@ impl MsgPackParser for Request {
   /// Parse MessagePack body as type `T` from request with default max size limit.
   #[inline]
   async fn parse_msgpack<'de, T: Deserialize<'de>>(&'de mut self) -> MResult<T> {
-    self.parse_msgpack_with_max_size(salvo::http::request::secure_max_size()).await
+    self.parse_msgpack_with_max_size(salvo::http::request::global_secure_max_size()).await
   }
   
   /// Parse MessagePack body as type `T` from request with max size limit.
