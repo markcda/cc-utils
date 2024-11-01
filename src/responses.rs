@@ -97,7 +97,7 @@ impl_oapi_endpoint_out!(OK, "text/plain");
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[macro_export]
-macro_rules! ok { () => { Ok(OK(cc_utils::fn_name!())) }; }
+macro_rules! ok { () => { Ok(OK($crate::fn_name!())) }; }
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
@@ -123,7 +123,7 @@ impl_oapi_endpoint_out!(Plain, "text/plain");
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[macro_export]
-macro_rules! plain { ($plain_text:expr) => { Ok(Plain($plain_text, cc_utils::fn_name!())) }; }
+macro_rules! plain { ($plain_text:expr) => { Ok(Plain($plain_text, $crate::fn_name!())) }; }
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
@@ -149,7 +149,7 @@ impl_oapi_endpoint_out!(Html, "text/html");
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[macro_export]
-macro_rules! html { ($html_data:expr) => { Ok(Html($html_data, cc_utils::fn_name!())) }; }
+macro_rules! html { ($html_data:expr) => { Ok(Html($html_data, $crate::fn_name!())) }; }
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
@@ -187,7 +187,7 @@ impl_oapi_endpoint_out!(File, "application/octet-stream");
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[macro_export]
-macro_rules! file { ($filepath:expr, $attached_filename:expr) => { Ok(File($filepath, $attached_filename, cc_utils::fn_name!())) }; }
+macro_rules! file { ($filepath:expr, $attached_filename:expr) => { Ok(File($filepath, $attached_filename, $crate::fn_name!())) }; }
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
@@ -213,7 +213,7 @@ impl_oapi_endpoint_out_t!(Json, "application/json");
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[macro_export]
-macro_rules! json { ($json_data:expr) => { Ok(Json($json_data, cc_utils::fn_name!())) }; }
+macro_rules! json { ($json_data:expr) => { Ok(Json($json_data, $crate::fn_name!())) }; }
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
@@ -250,7 +250,7 @@ impl_oapi_endpoint_out_t!(MsgPack, "application/msgpack");
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[macro_export]
-macro_rules! msgpack { ($msgpack_data:expr) => { Ok(MsgPack($msgpack_data, cc_utils::fn_name!())) }; }
+macro_rules! msgpack { ($msgpack_data:expr) => { Ok(MsgPack($msgpack_data, $crate::fn_name!())) }; }
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
