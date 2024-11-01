@@ -106,7 +106,7 @@ impl ServerResponseWriter for OK {
   async fn write(self, _req: &mut Request, _depot: &mut Depot, res: &mut Response) {
     res.status_code(StatusCode::OK);
     res.render("");
-    log::debug!("[{}] => Received and sent result 200", self.0);
+    tracing::debug!("[{}] => Received and sent result 200", self.0);
   }
 }
 
@@ -132,7 +132,7 @@ impl ServerResponseWriter for Plain {
   async fn write(self, _req: &mut Request, _depot: &mut Depot, res: &mut Response) {
     res.status_code(StatusCode::OK);
     res.render(&self.0);
-    log::debug!("[{}] => Received and sent result 200 with text: {}", self.1, self.0);
+    tracing::debug!("[{}] => Received and sent result 200 with text: {}", self.1, self.0);
   }
 }
 
@@ -158,7 +158,7 @@ impl ServerResponseWriter for Html {
   async fn write(self, _req: &mut Request, _depot: &mut Depot, res: &mut Response) {
     res.status_code(StatusCode::OK);
     res.render(salvo::writing::Text::Html(&self.0));
-    log::debug!("[{}] => Received and sent result 200 with HTML", self.1);
+    tracing::debug!("[{}] => Received and sent result 200 with HTML", self.1);
   }
 }
 
@@ -181,13 +181,13 @@ impl_oapi_endpoint_out!(File, "application/octet-stream");
 /// use salvo::prelude::*;
 ///
 /// pub async fn some_endpoint() -> MResult<File> {
-///   file!("filepath", "Normal file name")
+///   file_upload!("filepath".to_string(), "Normal file name".to_string())
 /// }
 /// ```
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[macro_export]
-macro_rules! file { ($filepath:expr, $attached_filename:expr) => { Ok(File($filepath, $attached_filename, $crate::fn_name!())) }; }
+macro_rules! file_upload { ($filepath:expr, $attached_filename:expr) => { Ok(File($filepath, $attached_filename, $crate::fn_name!())) }; }
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
@@ -196,7 +196,7 @@ impl ServerResponseWriter for File {
   async fn write(self, req: &mut Request, _depot: &mut Depot, res: &mut Response) {
     res.status_code(StatusCode::OK);
     NamedFile::builder(&self.0).attached_name(&self.1).use_last_modified(true).send(req.headers(), res).await;
-    log::debug!("[{}] => Received and sent result 200 with file {}", self.2, self.1);
+    tracing::debug!("[{}] => Received and sent result 200 with file {}", self.2, self.1);
   }
 }
 
@@ -224,16 +224,15 @@ impl<T: Serialize + Send> ServerResponseWriter for Json<T> {
     match serde_json::to_string(&self.0) {
       Ok(s) => {
         res.headers_mut().insert(CONTENT_TYPE, HeaderValue::from_static("application/json; charset=utf-8"));
-        log::debug!("[{}] => Sending JSON: {:?}", self.1, s.as_str());
+        tracing::debug!("[{}] => Sending JSON: {:?}", self.1, s.as_str());
         res.write_body(s).ok();
-        log::debug!("[{}] => Received and sent result 200 with JSON", self.1);
+        tracing::debug!("[{}] => Received and sent result 200 with JSON", self.1);
       }
       Err(e) => {
-        log::error!("[{}] => Failed to serialize data: {:?}", e, self.1);
+        tracing::error!("[{}] => Failed to serialize data: {:?}", e, self.1);
         ErrorResponse::from("Failed to serialize data.").with_500().build().write(req, depot, res).await;
       }
     }
-    log::debug!("[{}] => Received and sent result 200 with JSON", self.1);
   }
 }
 
@@ -261,12 +260,12 @@ impl<T: Serialize + Send> ServerResponseWriter for MsgPack<T> {
     match rmp_serde::to_vec(&self.0) {
       Ok(bytes) => {
         res.headers_mut().insert(CONTENT_TYPE, HeaderValue::from_static("application/msgpack; charset=utf-8"));
-        log::debug!("[{}] => Sending bytes: {:?}", self.1, bytes);
+        tracing::debug!("[{}] => Sending bytes: {:?}", self.1, bytes);
         res.write_body(bytes).ok();
-        log::debug!("[{}] => Received and sent result 200 with MsgPack", self.1);
+        tracing::debug!("[{}] => Received and sent result 200 with MsgPack", self.1);
       }
       Err(e) => {
-        log::error!("[{}] => Failed to serialize data: {:?}", e, self.1);
+        tracing::error!("[{}] => Failed to serialize data: {:?}", e, self.1);
         ErrorResponse::from("Failed to serialize data.").with_500().build().write(req, depot, res).await;
       }
     }

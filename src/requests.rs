@@ -41,7 +41,7 @@ impl MsgPackParser for Request {
         } else {
           payload.as_ref()
         };
-        log::debug!("{:?}", payload);
+        tracing::debug!("{:?}", payload);
         return rmp_serde::from_slice::<T>(payload).consider(Some(StatusCode::BAD_REQUEST), None::<String>, true)
       }
     }

@@ -254,9 +254,8 @@ impl ErrorResponse {
 
   /// Changes error message text.
   pub fn with_text(&mut self, text: impl Into<String>) -> &mut Self {
-    match self.original_text {
-      None => self.original_text = Some(self.error_text.to_owned()),
-      Some(_) => {}
+    if self.original_text.is_none() {
+      self.original_text = Some(self.error_text.to_owned());
     }
     self.error_text = text.into();
     self
@@ -567,8 +566,6 @@ impl_consider!(std::env::VarError);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(std::sync::mpsc::RecvError);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-impl_consider!(log::SetLoggerError);
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(serde_json::Error);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(BoxDynError);
@@ -681,8 +678,6 @@ impl_consider_cli!(rmp_serde::decode::Error);
 impl_consider_cli!(std::io::Error);
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(std::string::FromUtf8Error);
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-impl_consider_cli!(log::SetLoggerError);
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(serde_json::Error);
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]

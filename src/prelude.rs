@@ -30,7 +30,7 @@ pub use crate::errors::{CliError, ConsiderCli};
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-pub use crate::{ok, plain, html, file, json, msgpack};
+pub use crate::{ok, plain, html, file_upload, json, msgpack};
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
