@@ -1,5 +1,7 @@
 //! Implementation of utilities for working with MessagePack with requests in `salvo` and `reqwest`.
 
+#[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 use crate::prelude::*;
 
 #[cfg(feature = "salvo")]
