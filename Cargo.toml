@@ -1,47 +1,22 @@
 [package]
 name = "cc-utils"
 description = "Rust Fullstack utils (strict error handling, `Consider` trait, MessagePack support, etc.) for Salvo and Yew/Dioxus/Leptos/*"
-version = "0.4.0"
+version = "0.5.1"
 edition = "2021"
 license = "MIT"
 authors = ["Klimenty Titov <aclo.create@gmail.com>"]
 repository = "https://github.com/markcda/cc-utils"
 
 [features]
-default = ["salvo", "reqwest", "base64", "bb8-redis", "sea-orm", "dotenv", "serde-yaml", "tracing-appender", "uuid", "sqlx", "web-sys", "web-ws"]
-base64 = ["dep:base64"]
+default = ["salvo", "reqwest"]
 salvo = ["dep:salvo"]
 reqwest = ["dep:reqwest"]
-bb8-redis = ["dep:bb8", "dep:bb8-redis"]
-bb8-mongo = ["dep:bb8", "dep:mongodb", "dep:bb8-mongodb"]
-sea-orm = ["dep:sea-orm"]
-dotenv = ["dep:dotenv"]
-serde-yaml = ["dep:serde_yaml"]
-tracing-appender = ["dep:tracing-appender"]
-uuid = ["dep:uuid"]
-sqlx = ["dep:sqlx"]
-web-sys = ["dep:web-sys"]
-web-ws = ["dep:ws_stream_wasm"]
 
 [dependencies]
 anyhow = "1.0"
-base64 = { version = "0.22", optional = true }
-bb8 = { version = "0.8", optional = true }
-bb8-mongodb = { version = "0.2", optional = true }
-bb8-redis = { version = "0.15", optional = true }
-dotenv = { version = "0.15", optional = true }
-log = "0.4"
-mongodb = { version = "2.8", optional = true }
 reqwest = { git = "https://github.com/markcda/reqwest.git", branch = "msgpack-support", default-features = false, features = ["json", "rustls-tls"], optional = true }
 rmp-serde = "1.3"
 salvo = { version = "0.74", features = ["oapi", "rustls"], optional = true }
-sea-orm = { version = "1.1", optional = true }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-serde_yaml = { version = "0.9", optional = true }
-sqlx = { version = "0.7", default-features = false, optional = true }
 tracing = "0.1"
-tracing-appender = { version = "0.2", optional = true }
-uuid = { version = "1", features = ["v4", "serde"], optional = true }
-web-sys = { version = "0.3", optional = true }
-ws_stream_wasm = { version = "0.7", optional = true }

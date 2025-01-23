@@ -4,9 +4,6 @@
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 use std::any::Any;
 
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-use std::fmt::Write;
-
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 use salvo::http::StatusCode;
@@ -257,9 +254,8 @@ impl ErrorResponse {
 
   /// Changes error message text.
   pub fn with_text(&mut self, text: impl Into<String>) -> &mut Self {
-    match self.original_text {
-      None => self.original_text = Some(self.error_text.to_owned()),
-      Some(_) => {}
+    if self.original_text.is_none() {
+      self.original_text = Some(self.error_text.to_owned());
     }
     self.error_text = text.into();
     self
@@ -570,8 +566,6 @@ impl_consider!(std::env::VarError);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(std::sync::mpsc::RecvError);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-impl_consider!(log::SetLoggerError);
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(serde_json::Error);
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(BoxDynError);
@@ -668,57 +662,13 @@ impl<U> From<std::sync::mpsc::SendError<U>> for ErrorResponse {
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(salvo::http::header::ToStrError);
 
-#[cfg(feature = "bb8-redis")]
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-impl_consider!(bb8_redis::redis::RedisError);
-
-#[cfg(feature = "bb8-redis")]
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-impl_consider!(bb8::RunError<bb8_redis::redis::RedisError>);
-
-#[cfg(feature = "bb8-mongo")]
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-impl_consider!(bb8_mongodb::Error);
-
-#[cfg(feature = "bb8-mongo")]
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-impl_consider!(mongodb::error::Error);
-
-#[cfg(feature = "dotenv")]
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-impl_consider!(dotenv::Error);
-
-#[cfg(feature = "sea-orm")]
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-impl_consider!(sea_orm::DbErr);
-
-#[cfg(feature = "serde-yaml")]
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-impl_consider!(serde_yaml::Error);
-
 #[cfg(feature = "reqwest")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(reqwest::Error);
 
-#[cfg(feature = "base64")]
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-impl_consider!(base64::DecodeError);
-
-#[cfg(feature = "uuid")]
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-impl_consider!(uuid::Error);
-
-#[cfg(feature = "sqlx")]
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-impl_consider!(sqlx::Error);
-
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 impl_consider!(salvo::http::errors::StatusError);
-
-#[cfg(feature = "tracing-appender")]
-#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-impl_consider!(tracing_appender::rolling::InitError);
 
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(rmp_serde::encode::Error);
@@ -729,8 +679,6 @@ impl_consider_cli!(std::io::Error);
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(std::string::FromUtf8Error);
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-impl_consider_cli!(log::SetLoggerError);
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(serde_json::Error);
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(BoxDynError);
@@ -738,42 +686,3 @@ impl_consider_cli!(BoxDynError);
 #[cfg(feature = "reqwest")]
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl_consider_cli!(reqwest::Error);
-
-#[cfg(feature = "base64")]
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-impl_consider_cli!(base64::DecodeError);
-
-#[cfg(feature = "uuid")]
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-impl_consider_cli!(uuid::Error);
-
-#[cfg(feature = "web-sys")]
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-impl<T> ConsiderCli<T> for Result<T, web_sys::wasm_bindgen::JsValue> {
-  /// Изменяет параметры возможной ошибки на указанные.
-  fn consider_cli(self, error_text_replacement: Option<String>) -> Result<T, CliError> {
-    self.map_err(|e| {
-      let mut new_error = CliError {
-        message: e.as_string().unwrap_or_default(),
-      };
-      if error_text_replacement.is_some() {
-        new_error.message = error_text_replacement.unwrap();
-      }
-      new_error
-    })
-  }
-}
-
-#[cfg(feature = "web-sys")]
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-impl From<web_sys::wasm_bindgen::JsValue> for CliError {
-  /// Создаёт `CliError` из данной ошибки.
-  fn from(value: web_sys::wasm_bindgen::JsValue) -> Self {
-    let s = value.as_string().unwrap_or_default();
-    format!("Ошибка в JavaScript: {}", s).into()
-  }
-}
-
-#[cfg(feature = "web-ws")]
-#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
-impl_consider_cli!(ws_stream_wasm::WsErr);

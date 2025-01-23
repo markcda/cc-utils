@@ -1,5 +1,7 @@
 //! Implementation of utilities for working with MessagePack with requests in `salvo` and `reqwest`.
 
+#[cfg(feature = "salvo")]
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 use crate::prelude::*;
 
 #[cfg(feature = "salvo")]
@@ -39,7 +41,7 @@ impl MsgPackParser for Request {
         } else {
           payload.as_ref()
         };
-        log::debug!("{:?}", payload);
+        tracing::debug!("{:?}", payload);
         return rmp_serde::from_slice::<T>(payload).consider(Some(StatusCode::BAD_REQUEST), None::<String>, true)
       }
     }
