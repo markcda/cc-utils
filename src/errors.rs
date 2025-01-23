@@ -59,7 +59,7 @@ pub struct CliError {
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 impl std::fmt::Display for CliError {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    f.write_str(&format!("{}", self.message))
+    f.write_str(self.message.as_str())
   }
 }
 
@@ -78,9 +78,7 @@ impl ServerResponseWriter for ErrorResponse {
         Some(StatusCode::NOT_FOUND) => "Page or method not found.",
         Some(StatusCode::METHOD_NOT_ALLOWED) => "Method not allowed.",
         Some(StatusCode::LOCKED) => "Your actions is locked.",
-        Some(StatusCode::INTERNAL_SERVER_ERROR) => {
-          "Internal server error. Contact the administrator."
-        }
+        Some(StatusCode::INTERNAL_SERVER_ERROR) => "Internal server error. Contact the administrator.",
         _ => "Specific error. Check with the administrator for details.",
       };
       tracing::error!(
@@ -94,11 +92,7 @@ impl ServerResponseWriter for ErrorResponse {
       }
       res.render(public_error_desc);
     } else {
-      tracing::error!(
-        "Error with code {:?}: \"{}\"",
-        self.status_code,
-        self.error_text
-      );
+      tracing::error!("Error with code {:?}: \"{}\"", self.status_code, self.error_text);
       if self.original_text.is_some() {
         tracing::error!("The original error text: {:?}", self.original_text.unwrap());
       }
@@ -114,38 +108,31 @@ impl EndpointOutRegister for ErrorResponse {
   fn register(components: &mut salvo::oapi::Components, operation: &mut salvo::oapi::Operation) {
     operation.responses.insert(
       "400",
-      salvo::oapi::Response::new("Bad request")
-        .add_content("text/plain", String::to_schema(components)),
+      salvo::oapi::Response::new("Bad request").add_content("text/plain", String::to_schema(components)),
     );
     operation.responses.insert(
       "401",
-      salvo::oapi::Response::new("Unauthorized")
-        .add_content("text/plain", String::to_schema(components)),
+      salvo::oapi::Response::new("Unauthorized").add_content("text/plain", String::to_schema(components)),
     );
     operation.responses.insert(
       "403",
-      salvo::oapi::Response::new("Forbidden")
-        .add_content("text/plain", String::to_schema(components)),
+      salvo::oapi::Response::new("Forbidden").add_content("text/plain", String::to_schema(components)),
     );
     operation.responses.insert(
       "404",
-      salvo::oapi::Response::new("Not found")
-        .add_content("text/plain", String::to_schema(components)),
+      salvo::oapi::Response::new("Not found").add_content("text/plain", String::to_schema(components)),
     );
     operation.responses.insert(
       "405",
-      salvo::oapi::Response::new("Method not allowed")
-        .add_content("text/plain", String::to_schema(components)),
+      salvo::oapi::Response::new("Method not allowed").add_content("text/plain", String::to_schema(components)),
     );
     operation.responses.insert(
       "423",
-      salvo::oapi::Response::new("Locked")
-        .add_content("text/plain", String::to_schema(components)),
+      salvo::oapi::Response::new("Locked").add_content("text/plain", String::to_schema(components)),
     );
     operation.responses.insert(
       "500",
-      salvo::oapi::Response::new("Internal server error")
-        .add_content("text/plain", String::to_schema(components)),
+      salvo::oapi::Response::new("Internal server error").add_content("text/plain", String::to_schema(components)),
     );
   }
 }
@@ -425,9 +412,7 @@ impl<T> ConsiderCli<T> for Result<T, &str> {
   /// Changes the parameters of a possible error to the specified ones.
   fn consider_cli(self, error_text_replacement: Option<String>) -> Result<T, CliError> {
     self.map_err(|e| {
-      let mut new_error = CliError {
-        message: e.to_owned(),
-      };
+      let mut new_error = CliError { message: e.to_owned() };
       if error_text_replacement.is_some() {
         new_error.message = error_text_replacement.unwrap();
       }
@@ -533,9 +518,7 @@ macro_rules! impl_consider_cli {
       /// Изменяет параметры возможной ошибки на указанные.
       fn consider_cli(self, error_text_replacement: Option<String>) -> Result<T, CliError> {
         self.map_err(|e| {
-          let mut new_error = CliError {
-            message: e.to_string(),
-          };
+          let mut new_error = CliError { message: e.to_string() };
           if error_text_replacement.is_some() {
             new_error.message = error_text_replacement.unwrap();
           }

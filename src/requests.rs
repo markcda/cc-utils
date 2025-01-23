@@ -26,9 +26,11 @@ impl MsgPackParser for Request {
   /// Parse MessagePack body as type `T` from request with default max size limit.
   #[inline]
   async fn parse_msgpack<'de, T: Deserialize<'de>>(&'de mut self) -> MResult<T> {
-    self.parse_msgpack_with_max_size(salvo::http::request::global_secure_max_size()).await
+    self
+      .parse_msgpack_with_max_size(salvo::http::request::global_secure_max_size())
+      .await
   }
-  
+
   /// Parse MessagePack body as type `T` from request with max size limit.
   #[inline]
   async fn parse_msgpack_with_max_size<'de, T: Deserialize<'de>>(&'de mut self, max_size: usize) -> MResult<T> {
@@ -42,16 +44,14 @@ impl MsgPackParser for Request {
           payload.as_ref()
         };
         tracing::debug!("{:?}", payload);
-        return rmp_serde::from_slice::<T>(payload).consider(Some(StatusCode::BAD_REQUEST), None::<String>, true)
+        return rmp_serde::from_slice::<T>(payload).consider(Some(StatusCode::BAD_REQUEST), None::<String>, true);
       }
     }
-    Err(
-      ErrorResponse {
-        status_code: Some(StatusCode::BAD_REQUEST),
-        error_text: "Bad content type, must be `application/msgpack`.".into(),
-        original_text: None,
-        public_error: true
-      }
-    )
+    Err(ErrorResponse {
+      status_code: Some(StatusCode::BAD_REQUEST),
+      error_text: "Bad content type, must be `application/msgpack`.".into(),
+      original_text: None,
+      public_error: true,
+    })
   }
 }

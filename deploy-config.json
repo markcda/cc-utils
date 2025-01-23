@@ -1,0 +1,230 @@
+{
+  "project_name": "cc-utils",
+  "langs": [
+    "Rust"
+  ],
+  "targets": [
+    {
+      "arch": "x86_64",
+      "os": "Linux",
+      "derivative": "any",
+      "version": "No"
+    },
+    {
+      "arch": "wasm32",
+      "os": {
+        "Other": "web"
+      },
+      "derivative": "any",
+      "version": "No"
+    }
+  ],
+  "deploy_toolkit": null,
+  "cache_files": [
+    ".git",
+    "Cargo.lock",
+    "target"
+  ],
+  "pipelines": [
+    {
+      "title": "build",
+      "desc": "CC Utils Pipeline.",
+      "info": "cc-utils-default@0.1.0",
+      "tags": [
+        "cargo",
+        "clippy",
+        "build"
+      ],
+      "actions": [
+        {
+          "title": "Lint",
+          "desc": "Got from `Cargo Clippy`.",
+          "info": "cargo-clippy@0.1.0",
+          "tags": [
+            "cargo",
+            "clippy"
+          ],
+          "action": {
+            "PreBuild": {
+              "supported_langs": [
+                "Rust"
+              ],
+              "commands": [
+                {
+                  "bash_c": "RUSTFLAGS='-Zthreads=16 --cfg reqwest_unstable' cargo clippy",
+                  "ignore_fails": false,
+                  "show_success_output": true,
+                  "show_bash_c": true
+                }
+              ]
+            }
+          },
+          "requirements": [
+            {
+              "Exists": "/bin/cargo"
+            }
+          ]
+        },
+        {
+          "title": "Format",
+          "desc": "Format `.rs` files",
+          "info": "cargo-fmt@0.1.0",
+          "tags": [
+            "rust",
+            "cargo",
+            "fmt"
+          ],
+          "action": {
+            "PreBuild": {
+              "supported_langs": [
+                "Rust"
+              ],
+              "commands": [
+                {
+                  "bash_c": "cargo fmt -- --config tab_spaces=2,max_width=120 */**/*.rs",
+                  "ignore_fails": false,
+                  "show_success_output": false,
+                  "show_bash_c": true,
+                  "only_when_fresh": false
+                }
+              ]
+            }
+          },
+          "exec_in_project_dir": true
+        },
+        {
+          "title": "Build",
+          "desc": "Got from `Cargo Build (Release)`. Build the Rust project with Cargo default settings in release mode",
+          "info": "cargo-rel@0.1",
+          "tags": [
+            "rust",
+            "cargo"
+          ],
+          "action": {
+            "Build": {
+              "supported_langs": [
+                "Rust"
+              ],
+              "commands": [
+                {
+                  "bash_c": "RUSTFLAGS='-Zthreads=16 --cfg reqwest_unstable' cargo build --release",
+                  "ignore_fails": false,
+                  "show_success_output": false,
+                  "show_bash_c": true
+                }
+              ]
+            }
+          },
+          "requirements": [
+            {
+              "Exists": "/bin/cargo"
+            }
+          ]
+        }
+      ],
+      "default": true
+    },
+    {
+      "title": "build-wasm",
+      "desc": "CC Utils Pipeline.",
+      "info": "cc-utils-default@0.1.1",
+      "tags": [
+        "cargo",
+        "clippy",
+        "build"
+      ],
+      "actions": [
+        {
+          "title": "Lint",
+          "desc": "Got from `Cargo Clippy`.",
+          "info": "cargo-clippy@0.1.0",
+          "tags": [
+            "cargo",
+            "clippy"
+          ],
+          "action": {
+            "PreBuild": {
+              "supported_langs": [
+                "Rust"
+              ],
+              "commands": [
+                {
+                  "bash_c": "RUSTFLAGS='-Zthreads=16 --cfg reqwest_unstable' cargo clippy --target wasm32-unknown-unknown --no-default-features --features=reqwest",
+                  "ignore_fails": false,
+                  "show_success_output": true,
+                  "show_bash_c": true
+                }
+              ]
+            }
+          },
+          "requirements": [
+            {
+              "Exists": "/bin/cargo"
+            }
+          ]
+        },
+        {
+          "title": "Format",
+          "desc": "Format `.rs` files",
+          "info": "cargo-fmt@0.1.0",
+          "tags": [
+            "rust",
+            "cargo",
+            "fmt"
+          ],
+          "action": {
+            "PreBuild": {
+              "supported_langs": [
+                "Rust"
+              ],
+              "commands": [
+                {
+                  "bash_c": "cargo fmt -- --config tab_spaces=2,max_width=120 */**/*.rs",
+                  "ignore_fails": false,
+                  "show_success_output": false,
+                  "show_bash_c": true,
+                  "only_when_fresh": false
+                }
+              ]
+            }
+          },
+          "exec_in_project_dir": true
+        },
+        {
+          "title": "Build",
+          "desc": "Got from `Cargo Build (Release)`. Build the Rust project with Cargo default settings in release mode",
+          "info": "cargo-rel@0.1",
+          "tags": [
+            "rust",
+            "cargo"
+          ],
+          "action": {
+            "Build": {
+              "supported_langs": [
+                "Rust"
+              ],
+              "commands": [
+                {
+                  "bash_c": "RUSTFLAGS='-Zthreads=16 --cfg reqwest_unstable' cargo build --release --target wasm32-unknown-unknown --no-default-features --features=reqwest",
+                  "ignore_fails": false,
+                  "show_success_output": false,
+                  "show_bash_c": true
+                }
+              ]
+            }
+          },
+          "requirements": [
+            {
+              "Exists": "/bin/cargo"
+            }
+          ]
+        }
+      ],
+      "default": true
+    }
+  ],
+  "artifacts": [],
+  "variables": [],
+  "place_artifacts_into_project_root": [],
+  "version": 2
+}

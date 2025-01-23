@@ -1,3 +1,5 @@
+#![deny(warnings, clippy::todo, clippy::unimplemented)]
+
 pub mod compression;
 pub mod errors;
 pub mod requests;

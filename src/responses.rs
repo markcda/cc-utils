@@ -16,7 +16,7 @@ use salvo::oapi::{EndpointOutRegister, ToSchema};
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-use salvo::{Request, Response, Depot};
+use salvo::{Depot, Request, Response};
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
@@ -42,7 +42,7 @@ macro_rules! fn_name {
       std::any::type_name::<T>()
     }
     let name = type_name_of(f);
-    
+
     // For `#[endpoint]` path can be shortened as follows:
     match name[..name.len() - 3].rsplit("::").nth(2) {
       Some(el) => el,
@@ -97,7 +97,11 @@ impl_oapi_endpoint_out!(OK, "text/plain");
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[macro_export]
-macro_rules! ok { () => { Ok(cc_utils::responses::OK($crate::fn_name!())) } }
+macro_rules! ok {
+  () => {
+    Ok::<cc_utils::responses::OK, cc_utils::errors::ErrorResponse>(cc_utils::responses::OK($crate::fn_name!()))
+  };
+}
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
@@ -123,7 +127,14 @@ impl_oapi_endpoint_out!(Plain, "text/plain");
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[macro_export]
-macro_rules! plain { ($plain_text:expr) => { Ok(cc_utils::responses::Plain($plain_text, $crate::fn_name!())) } }
+macro_rules! plain {
+  ($plain_text:expr) => {
+    Ok::<cc_utils::responses::Plain, cc_utils::errors::ErrorResponse>(cc_utils::responses::Plain(
+      $plain_text,
+      $crate::fn_name!(),
+    ))
+  };
+}
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
@@ -149,7 +160,14 @@ impl_oapi_endpoint_out!(Html, "text/html");
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[macro_export]
-macro_rules! html { ($html_data:expr) => { Ok(cc_utils::responses::Html($html_data, $crate::fn_name!())) } }
+macro_rules! html {
+  ($html_data:expr) => {
+    Ok::<cc_utils::responses::Html, cc_utils::errors::ErrorResponse>(cc_utils::responses::Html(
+      $html_data,
+      $crate::fn_name!(),
+    ))
+  };
+}
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
@@ -187,7 +205,15 @@ impl_oapi_endpoint_out!(File, "application/octet-stream");
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[macro_export]
-macro_rules! file_upload { ($filepath:expr, $attached_filename:expr) => { Ok(cc_utils::responses::File($filepath, $attached_filename, $crate::fn_name!())) } }
+macro_rules! file_upload {
+  ($filepath:expr, $attached_filename:expr) => {
+    Ok::<cc_utils::responses::File, cc_utils::errors::ErrorResponse>(cc_utils::responses::File(
+      $filepath,
+      $attached_filename,
+      $crate::fn_name!(),
+    ))
+  };
+}
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
@@ -195,7 +221,11 @@ macro_rules! file_upload { ($filepath:expr, $attached_filename:expr) => { Ok(cc_
 impl ServerResponseWriter for File {
   async fn write(self, req: &mut Request, _depot: &mut Depot, res: &mut Response) {
     res.status_code(StatusCode::OK);
-    NamedFile::builder(&self.0).attached_name(&self.1).use_last_modified(true).send(req.headers(), res).await;
+    NamedFile::builder(&self.0)
+      .attached_name(&self.1)
+      .use_last_modified(true)
+      .send(req.headers(), res)
+      .await;
     tracing::debug!("[{}] => Received and sent result 200 with file {}", self.2, self.1);
   }
 }
@@ -213,7 +243,14 @@ impl_oapi_endpoint_out_t!(Json, "application/json");
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[macro_export]
-macro_rules! json { ($json_data:expr) => { Ok(cc_utils::responses::Json($json_data, $crate::fn_name!())) } }
+macro_rules! json {
+  ($json_data:expr) => {
+    Ok::<cc_utils::responses::Json, cc_utils::errors::ErrorResponse>(cc_utils::responses::Json(
+      $json_data,
+      $crate::fn_name!(),
+    ))
+  };
+}
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
@@ -223,14 +260,21 @@ impl<T: Serialize + Send> ServerResponseWriter for Json<T> {
     res.status_code(StatusCode::OK);
     match serde_json::to_string(&self.0) {
       Ok(s) => {
-        res.headers_mut().insert(CONTENT_TYPE, HeaderValue::from_static("application/json; charset=utf-8"));
+        res.headers_mut().insert(
+          CONTENT_TYPE,
+          HeaderValue::from_static("application/json; charset=utf-8"),
+        );
         tracing::debug!("[{}] => Sending JSON: {:?}", self.1, s.as_str());
         res.write_body(s).ok();
         tracing::debug!("[{}] => Received and sent result 200 with JSON", self.1);
       }
       Err(e) => {
         tracing::error!("[{}] => Failed to serialize data: {:?}", e, self.1);
-        ErrorResponse::from("Failed to serialize data.").with_500().build().write(req, depot, res).await;
+        ErrorResponse::from("Failed to serialize data.")
+          .with_500()
+          .build()
+          .write(req, depot, res)
+          .await;
       }
     }
   }
@@ -249,7 +293,14 @@ impl_oapi_endpoint_out_t!(MsgPack, "application/msgpack");
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
 #[macro_export]
-macro_rules! msgpack { ($msgpack_data:expr) => { Ok(cc_utils::responses::MsgPack($msgpack_data, $crate::fn_name!())) } }
+macro_rules! msgpack {
+  ($msgpack_data:expr) => {
+    Ok::<cc_utils::responses::MsgPack, cc_utils::errors::ErrorResponse>(cc_utils::responses::MsgPack(
+      $msgpack_data,
+      $crate::fn_name!(),
+    ))
+  };
+}
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
@@ -259,14 +310,21 @@ impl<T: Serialize + Send> ServerResponseWriter for MsgPack<T> {
     res.status_code(StatusCode::OK);
     match rmp_serde::to_vec(&self.0) {
       Ok(bytes) => {
-        res.headers_mut().insert(CONTENT_TYPE, HeaderValue::from_static("application/msgpack; charset=utf-8"));
+        res.headers_mut().insert(
+          CONTENT_TYPE,
+          HeaderValue::from_static("application/msgpack; charset=utf-8"),
+        );
         tracing::debug!("[{}] => Sending bytes: {:?}", self.1, bytes);
         res.write_body(bytes).ok();
         tracing::debug!("[{}] => Received and sent result 200 with MsgPack", self.1);
       }
       Err(e) => {
         tracing::error!("[{}] => Failed to serialize data: {:?}", e, self.1);
-        ErrorResponse::from("Failed to serialize data.").with_500().build().write(req, depot, res).await;
+        ErrorResponse::from("Failed to serialize data.")
+          .with_500()
+          .build()
+          .write(req, depot, res)
+          .await;
       }
     }
   }

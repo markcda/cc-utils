@@ -16,21 +16,21 @@ pub use crate::results::CResult;
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-pub use crate::responses::{OK, Plain, Html, File, Json, MsgPack};
+pub use crate::responses::{File, Html, Json, MsgPack, OK, Plain};
 
 #[cfg(feature = "reqwest")]
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 pub use crate::responses::MsgPackResponse;
 
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-pub use crate::errors::{ErrorResponse, Consider};
+pub use crate::errors::{Consider, ErrorResponse};
 
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
 pub use crate::errors::{CliError, ConsiderCli};
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-pub use crate::{ok, plain, html, file_upload, json, msgpack};
+pub use crate::{file_upload, html, json, msgpack, ok, plain};
 
 #[cfg(feature = "salvo")]
 #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]

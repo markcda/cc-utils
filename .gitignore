@@ -1,3 +1,5 @@
-Cargo.lock
-target/
 .idea/
+artifacts/
+target/
+.directory
+Cargo.lock
