@@ -245,7 +245,7 @@ impl_oapi_endpoint_out_t!(Json, "application/json");
 #[macro_export]
 macro_rules! json {
   ($json_data:expr) => {
-    Ok::<cc_utils::responses::Json, cc_utils::errors::ErrorResponse>(cc_utils::responses::Json(
+    Ok::<cc_utils::responses::Json<_>, cc_utils::errors::ErrorResponse>(cc_utils::responses::Json(
       $json_data,
       $crate::fn_name!(),
     ))
@@ -295,7 +295,7 @@ impl_oapi_endpoint_out_t!(MsgPack, "application/msgpack");
 #[macro_export]
 macro_rules! msgpack {
   ($msgpack_data:expr) => {
-    Ok::<cc_utils::responses::MsgPack, cc_utils::errors::ErrorResponse>(cc_utils::responses::MsgPack(
+    Ok::<cc_utils::responses::MsgPack<_>, cc_utils::errors::ErrorResponse>(cc_utils::responses::MsgPack(
       $msgpack_data,
       $crate::fn_name!(),
     ))
